@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Plus, Minus, Loader2, Coffee } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Game, AgileMethodology, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
 import { Badge } from './ui/Badge';
+import { HfInference } from '@huggingface/inference';
+
+const hf = new HfInference(import.meta.env.VITE_HF_ACCESS_TOKEN);
 
 interface GameCreateProps {
   onBack: () => void;
@@ -31,6 +34,7 @@ const DEFAULT_GAME: Omit<Game, 'id'> = {
 const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
   const [game, setGame] = useState<Omit<Game, 'id'>>(DEFAULT_GAME);
   const [errors, setErrors] = useState<Partial<Record<keyof Game, string>>>({});
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const methodologies: AgileMethodology[] = ['Scrum', 'Kanban', 'XP', 'Lean', 'LeSS', 'Nexus', 'General'];
   const purposes: GamePurpose[] = [
@@ -49,6 +53,70 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
     'Agile Practitioner',
     'Agile Master'
   ];
+
+  const generateMissingFields = async () => {
+    setIsGenerating(true);
+    try {
+      const filledFields = Object.entries(game).reduce((acc, [key, value]) => {
+        if (Array.isArray(value) && value.length > 0 && value.every(v => v !== '')) {
+          acc[key] = value;
+        } else if (value !== '' && value !== false && value !== 0) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as Record<string, any>);
+
+      const systemPrompt = `You are an expert Agile coach. Based on the following partial game information, complete the missing fields to create a cohesive Agile game. Return ONLY a JSON object with all fields.
+
+      Required format:
+      {
+        "title": "string",
+        "description": "string",
+        "methodology": ["Choose from: Scrum, Kanban, XP, Lean, LeSS, Nexus, General"],
+        "purpose": ["Choose from: Team Building, Problem Solving, Retrospective, Estimation, Planning, Prioritization, Process Improvement"],
+        "minParticipants": number,
+        "maxParticipants": number,
+        "duration": number,
+        "materials": ["string"],
+        "instructions": "string",
+        "facilitationTips": "string",
+        "complexity": "Easy/Medium/Hard",
+        "learningOutcomes": ["string"],
+        "isAccessible": boolean,
+        "accessibilityNotes": "string if isAccessible is true, empty string otherwise",
+        "requiredKnowledgeLevel": "New to Agile/Agile Basics/Agile Practitioner/Agile Master"
+      }`;
+
+      const response = await hf.textGeneration({
+        model: "deepseek-ai/deepseek-v2-lite-chat",
+        inputs: `${systemPrompt}\n\nPartial game data: ${JSON.stringify(filledFields, null, 2)}\n\nComplete the game data, maintaining any existing values and generating appropriate values for missing fields. Return only the JSON object.`,
+        parameters: {
+          max_new_tokens: 1000,
+          temperature: 0.7,
+          return_full_text: false
+        }
+      });
+
+      const generatedGame = JSON.parse(response.generated_text);
+      
+      const mergedGame = {
+        ...DEFAULT_GAME,
+        ...generatedGame,
+        ...filledFields
+      };
+
+      setGame(mergedGame);
+      setErrors({});
+    } catch (error) {
+      console.error('Error generating game:', error);
+      setErrors({ 
+        ...errors, 
+        title: 'Failed to generate game. Please try again or fill in the fields manually.' 
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const toggleMethodology = (methodology: AgileMethodology) => {
     const current = game.methodology;
@@ -172,10 +240,28 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
       </div>
       
       <form onSubmit={handleSubmit} className="p-6">
+        <div className="mb-6">
+          <Button
+            type="button"
+            onClick={generateMissingFields}
+            disabled={isGenerating}
+            className="w-full"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generating Game Details...
+              </>
+            ) : (
+              'Generate Missing Details with AI'
+            )}
+          </Button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Game Title*
+              Game Title
             </label>
             <input
               type="text"
@@ -192,7 +278,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Complexity*
+              Complexity
             </label>
             <div className="flex gap-2">
               {complexities.map((complexity) => (
@@ -212,7 +298,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description*
+            Description
           </label>
           <textarea
             value={game.description}
@@ -229,7 +315,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
 
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Required Knowledge Level*
+            Required Knowledge Level
           </label>
           <div className="flex gap-2">
             {knowledgeLevels.map((level) => (
@@ -249,7 +335,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Methodology* {errors.methodology && <span className="text-red-500">(Select at least one)</span>}
+              Methodology {errors.methodology && <span className="text-red-500">(Select at least one)</span>}
             </label>
             <div className="flex flex-wrap gap-2">
               {methodologies.map((methodology) => (
@@ -269,7 +355,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Purpose* {errors.purpose && <span className="text-red-500">(Select at least one)</span>}
+              Purpose {errors.purpose && <span className="text-red-500">(Select at least one)</span>}
             </label>
             <div className="flex flex-wrap gap-2">
               {purposes.map((purpose) => (
@@ -291,7 +377,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Min Participants*
+              Min Participants
             </label>
             <input
               type="number"
@@ -309,7 +395,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Max Participants*
+              Max Participants
             </label>
             <input
               type="number"
@@ -323,7 +409,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Duration (minutes)*
+              Duration (minutes)
             </label>
             <input
               type="number"
@@ -340,7 +426,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-1">
             <label className="block text-sm font-medium text-gray-700">
-              Learning Outcomes*
+              Learning Outcomes
             </label>
             <Button
               type="button"
@@ -420,7 +506,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Instructions*
+            Instructions
           </label>
           <textarea
             value={game.instructions}
@@ -499,6 +585,19 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
           </Button>
         </div>
       </form>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+        <div className="container mx-auto flex justify-center">
+          <Button
+            variant="outline"
+            className="flex items-center gap-2"
+            onClick={() => window.open('https://coff.ee/AgileGamifAI', '_blank')}
+          >
+            <Coffee className="h-4 w-4" />
+            Buy me a ☕️
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
