@@ -8,11 +8,17 @@ import GameDetail from './components/GameDetail';
 import GameCreate from './components/GameCreate';
 import GameFacilitator from './components/GameFacilitator';
 import { Button } from './components/ui/Button';
-import { Coffee } from 'lucide-react';
+import { Coffee, ChevronLeft, ChevronRight } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 function App() {
   // State
-  const [games, setGames] = useState<Game[]>(sampleGames);
+  const [games, setGames] = useState<Game[]>([]);
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [filters, setFilters] = useState<GameFilters>({
     methodology: [],
@@ -26,6 +32,58 @@ function App() {
   });
   const [currentView, setCurrentView] = useState<'library' | 'create' | 'favorites' | 'detail' | 'facilitator'>('library');
   const [facilitation, setFacilitation] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Calculate items per page based on screen size
+  const getItemsPerPage = () => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 ? 3 : 6;
+    }
+    return 6;
+  };
+  const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerPage(getItemsPerPage());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Fetch games from database
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('liked_games')
+          .select('*')
+          .order('popularity', { ascending: false });
+
+        if (error) throw error;
+
+        const formattedGames = data.map(item => ({
+          ...item.game_data,
+          id: item.id,
+          isFavorite: false
+        }));
+
+        setGames(formattedGames);
+      } catch (err) {
+        console.error('Error fetching games:', err);
+        setError('Failed to load games. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchGames();
+  }, []);
 
   // Get selected game if any
   const selectedGame = selectedGameId 
@@ -72,6 +130,11 @@ function App() {
   // Get only favorite games
   const favoriteGames = games.filter(game => game.isFavorite);
 
+  // Pagination
+  const totalPages = Math.ceil(filteredGames.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedGames = filteredGames.slice(startIndex, startIndex + itemsPerPage);
+
   // Handler functions
   const handleToggleFavorite = (id: string) => {
     setGames(games.map(game => 
@@ -104,6 +167,7 @@ function App() {
     setCurrentView(view);
     setSelectedGameId(null);
     setFacilitation(false);
+    setCurrentPage(1);
   };
 
   const handleSaveGame = (newGame: Omit<Game, 'id'>) => {
@@ -127,6 +191,28 @@ function App() {
     </div>
   );
 
+  const Pagination = () => (
+    <div className="flex justify-center items-center gap-4 mt-6">
+      <Button
+        variant="outline"
+        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+        disabled={currentPage === 1}
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </Button>
+      <span className="text-sm">
+        Page {currentPage} of {totalPages}
+      </span>
+      <Button
+        variant="outline"
+        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+        disabled={currentPage === totalPages}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header currentView={currentView} onViewChange={handleViewChange} />
@@ -135,11 +221,20 @@ function App() {
         {currentView === 'library' && (
           <>
             <GameFilter filters={filters} onFilterChange={setFilters} />
-            <GameGrid 
-              games={filteredGames} 
-              onToggleFavorite={handleToggleFavorite} 
-              onViewDetails={handleViewDetails}
-            />
+            {isLoading ? (
+              <div className="text-center py-8">Loading games...</div>
+            ) : error ? (
+              <div className="text-center py-8 text-red-600">{error}</div>
+            ) : (
+              <>
+                <GameGrid 
+                  games={paginatedGames} 
+                  onToggleFavorite={handleToggleFavorite} 
+                  onViewDetails={handleViewDetails}
+                />
+                {filteredGames.length > itemsPerPage && <Pagination />}
+              </>
+            )}
           </>
         )}
         
