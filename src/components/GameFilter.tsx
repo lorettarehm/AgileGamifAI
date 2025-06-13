@@ -96,14 +96,14 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+    <div className="bg-white rounded-lg shadow-md p-4 mb-6 border border-teal-100">
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
         <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-teal-400 h-4 w-4" />
           <input
             type="text"
             placeholder="Search games..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             value={filters.searchTerm}
             onChange={(e) => updateSearchTerm(e.target.value)}
           />
@@ -111,7 +111,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
         
         <Button 
           variant="outline" 
-          className="flex items-center gap-2 whitespace-nowrap"
+          className="flex items-center gap-2 whitespace-nowrap border-teal-300 text-teal-700 hover:bg-teal-50"
           onClick={() => setExpanded(!expanded)}
         >
           <Filter className="h-4 w-4" />
@@ -123,14 +123,14 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
       {expanded && (
         <div className="space-y-4 animate-fadeIn">
           <div>
-            <h3 className="font-medium text-gray-700 mb-2">Methodology</h3>
+            <h3 className="font-medium text-teal-700 mb-2">Methodology</h3>
             <div className="flex flex-wrap gap-2">
               {methodologies.map((methodology) => (
                 <Badge
                   key={methodology}
                   variant={filters.methodology.includes(methodology) ? "default" : "outline"}
-                  className={`cursor-pointer ${
-                    filters.methodology.includes(methodology) ? '' : 'hover:bg-gray-100'
+                  className={`cursor-pointer transition-colors ${
+                    filters.methodology.includes(methodology) ? '' : 'hover:bg-teal-100'
                   }`}
                   onClick={() => toggleMethodology(methodology)}
                 >
@@ -141,14 +141,14 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
           </div>
 
           <div>
-            <h3 className="font-medium text-gray-700 mb-2">Purpose</h3>
+            <h3 className="font-medium text-teal-700 mb-2">Purpose</h3>
             <div className="flex flex-wrap gap-2">
               {purposes.map((purpose) => (
                 <Badge
                   key={purpose}
                   variant={filters.purpose.includes(purpose) ? "secondary" : "outline"}
-                  className={`cursor-pointer ${
-                    filters.purpose.includes(purpose) ? '' : 'hover:bg-gray-100'
+                  className={`cursor-pointer transition-colors ${
+                    filters.purpose.includes(purpose) ? '' : 'hover:bg-purple-100'
                   }`}
                   onClick={() => togglePurpose(purpose)}
                 >
@@ -159,14 +159,14 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
           </div>
 
           <div>
-            <h3 className="font-medium text-gray-700 mb-2">Knowledge Level</h3>
+            <h3 className="font-medium text-teal-700 mb-2">Knowledge Level</h3>
             <div className="flex flex-wrap gap-2">
               {knowledgeLevels.map((level) => (
                 <Badge
                   key={level}
                   variant={filters.knowledgeLevel.includes(level) ? "purple" : "outline"}
-                  className={`cursor-pointer ${
-                    filters.knowledgeLevel.includes(level) ? '' : 'hover:bg-gray-100'
+                  className={`cursor-pointer transition-colors ${
+                    filters.knowledgeLevel.includes(level) ? '' : 'hover:bg-purple-100'
                   }`}
                   onClick={() => toggleKnowledgeLevel(level)}
                 >
@@ -178,7 +178,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h3 className="font-medium text-gray-700 mb-2">
+              <h3 className="font-medium text-teal-700 mb-2">
                 Team Size: {filters.participants > 0 ? `${filters.participants}+ participants` : 'Any'}
               </h3>
               <input
@@ -188,12 +188,12 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 step="1"
                 value={filters.participants}
                 onChange={(e) => updateParticipants(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 bg-teal-200 rounded-lg appearance-none cursor-pointer slider-thumb-teal"
               />
             </div>
 
             <div>
-              <h3 className="font-medium text-gray-700 mb-2">
+              <h3 className="font-medium text-teal-700 mb-2">
                 Max Duration: {filters.maxDuration} minutes
               </h3>
               <input
@@ -203,20 +203,20 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 step="5"
                 value={filters.maxDuration}
                 onChange={(e) => updateMaxDuration(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 bg-teal-200 rounded-lg appearance-none cursor-pointer slider-thumb-teal"
               />
             </div>
           </div>
 
           <div>
-            <h3 className="font-medium text-gray-700 mb-2">Complexity</h3>
+            <h3 className="font-medium text-teal-700 mb-2">Complexity</h3>
             <div className="flex flex-wrap gap-2">
               {complexities.map((complexity) => (
                 <Badge
                   key={complexity}
                   variant={filters.complexity.includes(complexity) ? "purple" : "outline"}
-                  className={`cursor-pointer ${
-                    filters.complexity.includes(complexity) ? '' : 'hover:bg-gray-100'
+                  className={`cursor-pointer transition-colors ${
+                    filters.complexity.includes(complexity) ? '' : 'hover:bg-purple-100'
                   }`}
                   onClick={() => toggleComplexity(complexity)}
                 >
@@ -232,9 +232,9 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 type="checkbox"
                 checked={filters.accessibleOnly}
                 onChange={toggleAccessibleOnly}
-                className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                className="h-4 w-4 text-teal-600 rounded border-teal-300 focus:ring-teal-500"
               />
-              <span className="text-sm font-medium text-gray-700 flex items-center">
+              <span className="text-sm font-medium text-teal-700 flex items-center">
                 <Accessibility className="h-4 w-4 mr-1" />
                 Show only disability-friendly games
               </span>
@@ -242,7 +242,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
           </div>
 
           <div className="flex justify-end">
-            <Button variant="ghost" onClick={resetFilters}>
+            <Button variant="ghost" onClick={resetFilters} className="text-teal-600 hover:bg-teal-100">
               Reset Filters
             </Button>
           </div>

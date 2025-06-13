@@ -177,11 +177,11 @@ function App() {
   };
 
   const Footer = () => (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-teal-200 p-4">
       <div className="container mx-auto flex justify-center">
         <Button
           variant="outline"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 border-teal-300 text-teal-700 hover:bg-teal-50"
           onClick={() => window.open('https://coff.ee/AgileGamifAI', '_blank')}
         >
           <Coffee className="h-4 w-4" />
@@ -197,16 +197,18 @@ function App() {
         variant="outline"
         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
         disabled={currentPage === 1}
+        className="border-teal-300 text-teal-700 hover:bg-teal-50"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      <span className="text-sm">
+      <span className="text-sm text-teal-700">
         Page {currentPage} of {totalPages}
       </span>
       <Button
         variant="outline"
         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
         disabled={currentPage === totalPages}
+        className="border-teal-300 text-teal-700 hover:bg-teal-50"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
@@ -214,7 +216,7 @@ function App() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-purple-50">
       <Header currentView={currentView} onViewChange={handleViewChange} />
       
       <main className="container mx-auto px-4 pb-24">
@@ -222,7 +224,7 @@ function App() {
           <>
             <GameFilter filters={filters} onFilterChange={setFilters} />
             {isLoading ? (
-              <div className="text-center py-8">Loading games...</div>
+              <div className="text-center py-8 text-teal-600">Loading games...</div>
             ) : error ? (
               <div className="text-center py-8 text-red-600">{error}</div>
             ) : (

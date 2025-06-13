@@ -224,8 +224,8 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+    <div className="bg-white rounded-lg shadow-xl overflow-hidden border border-teal-100">
+      <div className="bg-gradient-to-r from-teal-500 to-purple-400 p-6 text-white">
         <div className="flex items-center mb-4">
           <Button 
             variant="ghost" 
@@ -245,7 +245,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
             type="button"
             onClick={generateMissingFields}
             disabled={isGenerating}
-            className="w-full"
+            className="w-full bg-gradient-to-r from-purple-500 to-teal-500 hover:from-purple-600 hover:to-teal-600"
           >
             {isGenerating ? (
               <>
@@ -260,7 +260,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-teal-700 mb-1">
               Game Title
             </label>
             <input
@@ -270,14 +270,14 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                 setGame({ ...game, title: e.target.value });
                 if (errors.title) setErrors({ ...errors, title: undefined });
               }}
-              className={`w-full p-2 border rounded-md ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.title ? 'border-red-500' : 'border-teal-300'}`}
               placeholder="e.g., Sailboat Retrospective"
             />
             {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-teal-700 mb-1">
               Complexity
             </label>
             <div className="flex gap-2">
@@ -297,7 +297,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         </div>
         
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-teal-700 mb-1">
             Description
           </label>
           <textarea
@@ -306,7 +306,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
               setGame({ ...game, description: e.target.value });
               if (errors.description) setErrors({ ...errors, description: undefined });
             }}
-            className={`w-full p-2 border rounded-md ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.description ? 'border-red-500' : 'border-teal-300'}`}
             rows={2}
             placeholder="Brief description of the game and its purpose"
           />
@@ -314,7 +314,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-teal-700 mb-1">
             Required Knowledge Level
           </label>
           <div className="flex gap-2">
@@ -322,7 +322,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
               <Button
                 key={level}
                 type="button"
-                variant={game.requiredKnowledgeLevel === level ? "default" : "outline"}
+                variant={game.requiredKnowledgeLevel === level ? "secondary" : "outline"}
                 onClick={() => setGame({ ...game, requiredKnowledgeLevel: level })}
                 className="flex-1"
               >
@@ -334,7 +334,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-teal-700 mb-1">
               Methodology {errors.methodology && <span className="text-red-500">(Select at least one)</span>}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -342,8 +342,8 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                 <Badge
                   key={methodology}
                   variant={game.methodology.includes(methodology) ? "default" : "outline"}
-                  className={`cursor-pointer ${
-                    game.methodology.includes(methodology) ? '' : 'hover:bg-gray-100'
+                  className={`cursor-pointer transition-colors ${
+                    game.methodology.includes(methodology) ? '' : 'hover:bg-teal-100'
                   }`}
                   onClick={() => toggleMethodology(methodology)}
                 >
@@ -354,7 +354,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-teal-700 mb-1">
               Purpose {errors.purpose && <span className="text-red-500">(Select at least one)</span>}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -362,8 +362,8 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                 <Badge
                   key={purpose}
                   variant={game.purpose.includes(purpose) ? "secondary" : "outline"}
-                  className={`cursor-pointer ${
-                    game.purpose.includes(purpose) ? '' : 'hover:bg-gray-100'
+                  className={`cursor-pointer transition-colors ${
+                    game.purpose.includes(purpose) ? '' : 'hover:bg-purple-100'
                   }`}
                   onClick={() => togglePurpose(purpose)}
                 >
@@ -376,7 +376,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-teal-700 mb-1">
               Min Participants
             </label>
             <input
@@ -388,13 +388,13 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                 setGame({ ...game, minParticipants: parseInt(e.target.value) });
                 if (errors.minParticipants) setErrors({ ...errors, minParticipants: undefined });
               }}
-              className={`w-full p-2 border rounded-md ${errors.minParticipants ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.minParticipants ? 'border-red-500' : 'border-teal-300'}`}
             />
             {errors.minParticipants && <p className="mt-1 text-sm text-red-500">{errors.minParticipants}</p>}
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-teal-700 mb-1">
               Max Participants
             </label>
             <input
@@ -403,12 +403,12 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
               max="100"
               value={game.maxParticipants}
               onChange={(e) => setGame({ ...game, maxParticipants: parseInt(e.target.value) })}
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-teal-700 mb-1">
               Duration (minutes)
             </label>
             <input
@@ -418,14 +418,14 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
               step="5"
               value={game.duration}
               onChange={(e) => setGame({ ...game, duration: parseInt(e.target.value) })}
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             />
           </div>
         </div>
 
         <div className="mb-6">
           <div className="flex items-center justify-between mb-1">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-teal-700">
               Learning Outcomes
             </label>
             <Button
@@ -433,7 +433,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
               variant="ghost"
               size="sm"
               onClick={addLearningOutcome}
-              className="text-blue-600"
+              className="text-teal-600 hover:bg-teal-100"
             >
               <Plus className="h-4 w-4 mr-1" /> Add Outcome
             </Button>
@@ -445,7 +445,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                 type="text"
                 value={outcome}
                 onChange={(e) => updateLearningOutcome(index, e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 placeholder="e.g., Understand the importance of team collaboration"
               />
               <Button
@@ -453,7 +453,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                 variant="ghost"
                 size="icon"
                 onClick={() => removeLearningOutcome(index)}
-                className="ml-2 text-gray-500"
+                className="ml-2 text-gray-500 hover:bg-red-100 hover:text-red-600"
                 disabled={game.learningOutcomes.length === 1}
               >
                 <Minus className="h-4 w-4" />
@@ -467,7 +467,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         
         <div className="mb-6">
           <div className="flex items-center justify-between mb-1">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-teal-700">
               Materials Needed
             </label>
             <Button
@@ -475,7 +475,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
               variant="ghost"
               size="sm"
               onClick={addMaterial}
-              className="text-blue-600"
+              className="text-teal-600 hover:bg-teal-100"
             >
               <Plus className="h-4 w-4 mr-1" /> Add Material
             </Button>
@@ -487,7 +487,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                 type="text"
                 value={material}
                 onChange={(e) => updateMaterial(index, e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 placeholder={`Material ${index + 1}`}
               />
               <Button
@@ -495,7 +495,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                 variant="ghost"
                 size="icon"
                 onClick={() => removeMaterial(index)}
-                className="ml-2 text-gray-500"
+                className="ml-2 text-gray-500 hover:bg-red-100 hover:text-red-600"
                 disabled={game.materials.length === 1}
               >
                 <Minus className="h-4 w-4" />
@@ -505,7 +505,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         </div>
         
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-teal-700 mb-1">
             Instructions
           </label>
           <textarea
@@ -514,7 +514,7 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
               setGame({ ...game, instructions: e.target.value });
               if (errors.instructions) setErrors({ ...errors, instructions: undefined });
             }}
-            className={`w-full p-2 border rounded-md ${errors.instructions ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.instructions ? 'border-red-500' : 'border-teal-300'}`}
             rows={5}
             placeholder="Step-by-step instructions for running the game"
           />
@@ -522,13 +522,13 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
         </div>
         
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-teal-700 mb-1">
             Facilitation Tips
           </label>
           <textarea
             value={game.facilitationTips}
             onChange={(e) => setGame({ ...game, facilitationTips: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-md"
+            className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             rows={3}
             placeholder="Helpful tips for facilitating the game effectively"
           />
@@ -546,9 +546,9 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                   setGame(prev => ({ ...prev, accessibilityNotes: '' }));
                 }
               }}
-              className="h-4 w-4 text-blue-600 rounded border-gray-300"
+              className="h-4 w-4 text-teal-600 rounded border-teal-300 focus:ring-teal-500"
             />
-            <label htmlFor="isAccessible" className="ml-2 text-sm font-medium text-gray-700">
+            <label htmlFor="isAccessible" className="ml-2 text-sm font-medium text-teal-700">
               This game is disability-friendly
             </label>
           </div>
@@ -563,8 +563,8 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
                     setErrors({ ...errors, accessibilityNotes: undefined });
                   }
                 }}
-                className={`w-full p-2 border rounded-md ${
-                  errors.accessibilityNotes ? 'border-red-500' : 'border-gray-300'
+                className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${
+                  errors.accessibilityNotes ? 'border-red-500' : 'border-teal-300'
                 }`}
                 rows={3}
                 placeholder="Describe how this game accommodates different disabilities and any specific adaptations needed"
@@ -580,17 +580,17 @@ const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
           <Button type="button" variant="outline" onClick={onBack}>
             Cancel
           </Button>
-          <Button type="submit">
+          <Button type="submit" className="bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600">
             Save Game
           </Button>
         </div>
       </form>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-teal-200 p-4">
         <div className="container mx-auto flex justify-center">
           <Button
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-teal-300 text-teal-700 hover:bg-teal-50"
             onClick={() => window.open('https://coff.ee/AgileGamifAI', '_blank')}
           >
             <Coffee className="h-4 w-4" />

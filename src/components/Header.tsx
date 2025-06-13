@@ -11,23 +11,23 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   return (
-    <header className="bg-white shadow-sm py-4 px-6 mb-6">
+    <header className="bg-gradient-to-r from-teal-500 to-purple-400 shadow-lg py-4 px-6 mb-6">
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <img 
               src="/1749172667026.png" 
               alt="Agile GamifAI Logo" 
-              className="h-12 w-12 mr-3"
+              className="h-12 w-12 mr-3 rounded-lg shadow-md"
             />
-            <h1 className="text-xl font-bold text-gray-900">Agile Games</h1>
+            <h1 className="text-xl font-bold text-white">Agile Games</h1>
           </div>
 
           {/* Mobile menu button */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden text-white hover:bg-white/20"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <Menu className="h-6 w-6" />
@@ -36,8 +36,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
           {/* Desktop navigation */}
           <nav className="hidden md:flex space-x-2">
             <Button
-              variant={currentView === 'library' ? 'default' : 'ghost'}
-              className="flex items-center"
+              variant={currentView === 'library' ? 'secondary' : 'ghost'}
+              className={`flex items-center ${
+                currentView === 'library' 
+                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                  : 'text-white hover:bg-white/20'
+              }`}
               onClick={() => onViewChange('library')}
               disabled={currentView === 'detail' || currentView === 'facilitator'}
             >
@@ -46,8 +50,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
             </Button>
             
             <Button
-              variant={currentView === 'favorites' ? 'default' : 'ghost'}
-              className="flex items-center"
+              variant={currentView === 'favorites' ? 'secondary' : 'ghost'}
+              className={`flex items-center ${
+                currentView === 'favorites' 
+                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                  : 'text-white hover:bg-white/20'
+              }`}
               onClick={() => onViewChange('favorites')}
               disabled={currentView === 'detail' || currentView === 'facilitator'}
             >
@@ -56,8 +64,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
             </Button>
             
             <Button
-              variant={currentView === 'create' ? 'default' : 'ghost'}
-              className="flex items-center"
+              variant={currentView === 'create' ? 'secondary' : 'ghost'}
+              className={`flex items-center ${
+                currentView === 'create' 
+                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                  : 'text-white hover:bg-white/20'
+              }`}
               onClick={() => onViewChange('create')}
               disabled={currentView === 'detail' || currentView === 'facilitator'}
             >
@@ -71,8 +83,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
         {isMenuOpen && (
           <nav className="md:hidden mt-4 space-y-2">
             <Button
-              variant={currentView === 'library' ? 'default' : 'ghost'}
-              className="flex items-center w-full justify-start"
+              variant={currentView === 'library' ? 'secondary' : 'ghost'}
+              className={`flex items-center w-full justify-start ${
+                currentView === 'library' 
+                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                  : 'text-white hover:bg-white/20'
+              }`}
               onClick={() => {
                 onViewChange('library');
                 setIsMenuOpen(false);
@@ -84,8 +100,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
             </Button>
             
             <Button
-              variant={currentView === 'favorites' ? 'default' : 'ghost'}
-              className="flex items-center w-full justify-start"
+              variant={currentView === 'favorites' ? 'secondary' : 'ghost'}
+              className={`flex items-center w-full justify-start ${
+                currentView === 'favorites' 
+                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                  : 'text-white hover:bg-white/20'
+              }`}
               onClick={() => {
                 onViewChange('favorites');
                 setIsMenuOpen(false);
@@ -97,8 +117,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
             </Button>
             
             <Button
-              variant={currentView === 'create' ? 'default' : 'ghost'}
-              className="flex items-center w-full justify-start"
+              variant={currentView === 'create' ? 'secondary' : 'ghost'}
+              className={`flex items-center w-full justify-start ${
+                currentView === 'create' 
+                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                  : 'text-white hover:bg-white/20'
+              }`}
               onClick={() => {
                 onViewChange('create');
                 setIsMenuOpen(false);
