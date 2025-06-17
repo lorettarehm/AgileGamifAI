@@ -31,7 +31,7 @@ const DEFAULT_GAME: Omit<Game, 'id'> = {
   requiredKnowledgeLevel: 'Agile Basics'
 };
 
-const GameCreate: React.FC<GameCreateProps> = ({ onBack, onSaveGame }) => {
+const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
   const [game, setGame] = useState<Omit<Game, 'id'>>(DEFAULT_GAME);
   const [errors, setErrors] = useState<Partial<Record<keyof Game, string>>>({});
   const [isGenerating, setIsGenerating] = useState(false);
