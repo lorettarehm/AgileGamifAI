@@ -20,6 +20,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               alt="Agile GamifAI Logo" 
               className="h-12 w-12 mr-3 rounded-lg shadow-md"
             />
+            {/* Main application title */}
             <h1 className="text-xl font-bold text-white">Agile Games</h1>
           </div>
 

@@ -1,0 +1,1378 @@
+name: Update PromptTransfer Documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'vite.config.ts'
+      - 'tailwind.config.js'
+      - 'supabase/**'
+
+jobs:
+  update-prompt-transfer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Analyze Codebase and Update PromptTransfer
+        run: |
+          # Create a script to analyze the codebase and update PromptTransfer.md
+          cat > analyze_codebase.js << 'EOF'
+          const fs = require('fs');
+          const path = require('path');
+
+          // Function to recursively read directory
+          function readDirectory(dir, extensions = ['.tsx', '.ts', '.js', '.json']) {
+            const results = [];
+            const files = fs.readdirSync(dir, { withFileTypes: true });
+            
+            for (const file of files) {
+              const fullPath = path.join(dir, file.name);
+              if (file.isDirectory() && !file.name.startsWith('.') && file.name !== 'node_modules' && file.name !== 'dist') {
+                results.push(...readDirectory(fullPath, extensions));
+              } else if (file.isFile() && extensions.some(ext => file.name.endsWith(ext))) {
+                results.push(fullPath);
+              }
+            }
+            return results;
+          }
+
+          // Analyze key files
+          function analyzeCodebase() {
+            const analysis = {
+              components: [],
+              types: [],
+              features: [],
+              dependencies: {},
+              dbSchema: []
+            };
+
+            // Read package.json for dependencies
+            try {
+              const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+              analysis.dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
+            } catch (e) {
+              console.warn('Could not read package.json');
+            }
+
+            // Analyze source files
+            const sourceFiles = readDirectory('src');
+            sourceFiles.forEach(file => {
+              try {
+                const content = fs.readFileSync(file, 'utf8');
+                const relativePath = path.relative('.', file);
+                
+                // Extract component names and key features
+                if (file.includes('components/') && file.endsWith('.tsx')) {
+                  const componentName = path.basename(file, '.tsx');
+                  analysis.components.push({
+                    name: componentName,
+                    path: relativePath,
+                    hasState: content.includes('useState'),
+                    hasEffect: content.includes('useEffect'),
+                    hasAI: content.includes('hf.textGeneration') || content.includes('AI') || content.includes('inference'),
+                    hasDatabase: content.includes('supabase') || content.includes('database'),
+                    hasTimer: content.includes('timer') || content.includes('Timer'),
+                    hasNavigation: content.includes('navigation') || content.includes('Navigate'),
+                    exports: extractExports(content)
+                  });
+                }
+
+                // Extract type definitions
+                if (file.includes('types/') && file.endsWith('.ts')) {
+                  analysis.types.push({
+                    file: relativePath,
+                    interfaces: extractInterfaces(content),
+                    types: extractTypes(content)
+                  });
+                }
+
+                // Identify key features
+                if (content.includes('AI') || content.includes('textGeneration')) {
+                  analysis.features.push('AI Integration');
+                }
+                if (content.includes('supabase') || content.includes('database')) {
+                  analysis.features.push('Database Integration');
+                }
+                if (content.includes('timer') || content.includes('Timer')) {
+                  analysis.features.push('Timer Functionality');
+                }
+                if (content.includes('filter') || content.includes('Filter')) {
+                  analysis.features.push('Filtering System');
+                }
+
+              } catch (e) {
+                console.warn(`Could not analyze file: ${file}`);
+              }
+            });
+
+            // Analyze database migrations
+            if (fs.existsSync('supabase/migrations')) {
+              const migrationFiles = readDirectory('supabase/migrations', ['.sql']);
+              migrationFiles.forEach(file => {
+                try {
+                  const content = fs.readFileSync(file, 'utf8');
+                  analysis.dbSchema.push({
+                    file: path.relative('.', file),
+                    content: content.substring(0, 500) + (content.length > 500 ? '...' : '')
+                  });
+                } catch (e) {
+                  console.warn(`Could not read migration: ${file}`);
+                }
+              });
+            }
+
+            return analysis;
+          }
+
+          function extractExports(content) {
+            const exports = [];
+            const exportRegex = /export\s+(default\s+)?(function|const|class|interface|type)\s+(\w+)/g;
+            let match;
+            while ((match = exportRegex.exec(content)) !== null) {
+              exports.push(match[3]);
+            }
+            return exports;
+          }
+
+          function extractInterfaces(content) {
+            const interfaces = [];
+            const interfaceRegex = /interface\s+(\w+)/g;
+            let match;
+            while ((match = interfaceRegex.exec(content)) !== null) {
+              interfaces.push(match[1]);
+            }
+            return interfaces;
+          }
+
+          function extractTypes(content) {
+            const types = [];
+            const typeRegex = /type\s+(\w+)\s*=/g;
+            let match;
+            while ((match = typeRegex.exec(content)) !== null) {
+              types.push(match[1]);
+            }
+            return types;
+          }
+
+          // Generate updated PromptTransfer.md
+          function generatePromptTransfer(analysis) {
+            const currentDate = new Date().toISOString().split('T')[0];
+            
+            let content = `# AgileGamifAI Application Recreation Prompt
+
+*Last Updated: ${currentDate}*
+*Auto-generated based on current codebase analysis*
+
+## Overview
+Create a modern web application called "AgileGamifAI" that serves as a comprehensive platform for Agile games and activities. The application helps Agile practitioners discover, create, manage, and facilitate games that enhance team collaboration and learning.
+
+## Current Codebase Analysis
+
+### Detected Features
+${analysis.features.length > 0 ? analysis.features.map(f => `- ${f}`).join('\n') : '- No specific features detected'}
+
+### Component Architecture
+`;
+
+            // Add component details
+            analysis.components.forEach(comp => {
+              content += `
+#### ${comp.name}
+- **Path**: \`${comp.path}\`
+- **Capabilities**: `;
+              const capabilities = [];
+              if (comp.hasState) capabilities.push('State Management');
+              if (comp.hasEffect) capabilities.push('Side Effects');
+              if (comp.hasAI) capabilities.push('AI Integration');
+              if (comp.hasDatabase) capabilities.push('Database Operations');
+              if (comp.hasTimer) capabilities.push('Timer/Scheduling');
+              if (comp.hasNavigation) capabilities.push('Navigation');
+              
+              content += capabilities.length > 0 ? capabilities.join(', ') : 'Basic Component';
+              if (comp.exports.length > 0) {
+                content += `\n- **Exports**: ${comp.exports.join(', ')}`;
+              }
+            });
+
+            content += `
+
+### Type System
+`;
+            analysis.types.forEach(typeFile => {
+              content += `
+#### ${typeFile.file}
+`;
+              if (typeFile.interfaces.length > 0) {
+                content += `- **Interfaces**: ${typeFile.interfaces.join(', ')}\n`;
+              }
+              if (typeFile.types.length > 0) {
+                content += `- **Types**: ${typeFile.types.join(', ')}\n`;
+              }
+            });
+
+            content += `
+
+### Dependencies
+#### Production Dependencies
+`;
+            Object.entries(analysis.dependencies).forEach(([name, version]) => {
+              if (!name.startsWith('@types/') && !name.includes('eslint') && !name.includes('typescript')) {
+                content += `- **${name}**: ${version}\n`;
+              }
+            });
+
+            content += `
+
+### Database Schema
+`;
+            if (analysis.dbSchema.length > 0) {
+              analysis.dbSchema.forEach(schema => {
+                content += `
+#### ${schema.file}
+\`\`\`sql
+${schema.content}
+\`\`\`
+`;
+              });
+            } else {
+              content += 'No database migrations detected.\n';
+            }
+
+            content += `
+
+## Core Technologies Stack
+- **Frontend Framework**: React 18+ with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS with custom components
+- **Database**: Any modern database (SQL-based preferred for relational data)
+- **AI Integration**: Any text generation AI service with API access
+- **Deployment**: Static hosting platform with CI/CD pipeline
+- **Icons**: Lucide React icon library
+
+## Application Architecture
+
+### Essential Type Definitions
+Based on the current codebase, implement these core types:
+
+\`\`\`typescript
+export type AgileMethodology = 'Scrum' | 'Kanban' | 'XP' | 'Lean' | 'LeSS' | 'Nexus' | 'General';
+export type GamePurpose = 'Team Building' | 'Problem Solving' | 'Retrospective' | 'Estimation' | 'Planning' | 'Prioritization' | 'Process Improvement';
+export type GameComplexity = 'Easy' | 'Medium' | 'Hard';
+export type AgileKnowledgeLevel = 'New to Agile' | 'Agile Basics' | 'Agile Practitioner' | 'Agile Master';
+
+export interface Game {
+  id: string;
+  title: string;
+  description: string;
+  methodology: AgileMethodology[];
+  purpose: GamePurpose[];
+  minParticipants: number;
+  maxParticipants: number;
+  duration: number; // in minutes
+  materials: string[];
+  instructions: string;
+  facilitationTips: string;
+  complexity: GameComplexity;
+  isFavorite: boolean;
+  learningOutcomes: string[];
+  isAccessible: boolean;
+  accessibilityNotes?: string;
+  requiredKnowledgeLevel: AgileKnowledgeLevel;
+}
+
+export interface GameFilters {
+  methodology: AgileMethodology[];
+  purpose: GamePurpose[];
+  participants: number;
+  maxDuration: number;
+  complexity: GameComplexity[];
+  searchTerm: string;
+  knowledgeLevel: AgileKnowledgeLevel[];
+  accessibleOnly: boolean;
+}
+\`\`\`
+
+## Key Features & Implementation Requirements
+
+### 1. Main Application Structure
+- **State Management**: Games list, filters, current view, selected game, pagination
+- **Views**: Library, Create, Favorites, Detail, Facilitator modes
+- **Database Integration**: Load games from database, handle favorites
+- **Responsive Pagination**: Adaptive items per page based on screen size
+- **Error Handling**: Loading states and error messages
+
+### 2. Game Library System
+**Components**: GameGrid, GameCard, GameFilter
+- **Grid Display**: Responsive grid layout for game cards
+- **Advanced Filtering**: Multi-criteria filtering by methodology, purpose, complexity, knowledge level, participants, duration, search terms, accessibility
+- **Game Cards**: Display game overview with key metadata and actions
+- **Pagination**: Page-based navigation for large game collections
+
+### 3. AI-Powered Game Suggestion
+- **Custom Prompts**: User input for specific game requirements
+- **AI Integration**: Generate games using text generation AI with structured prompts
+- **System Prompt**: Expert Agile coach persona with specific JSON response format
+- **Response Parsing**: Parse AI-generated JSON into Game objects
+- **Save Integration**: Save liked AI-generated games to database with popularity tracking
+- **Error Handling**: Graceful failure with user-friendly messages
+
+### 4. Manual Game Creation
+- **Form Interface**: Comprehensive form for all game properties
+- **AI Assistance**: Auto-complete missing fields using AI when partial data is provided
+- **Validation**: Required field validation with error display
+- **Dynamic Arrays**: Add/remove materials and learning outcomes
+- **Multi-Select**: Methodology and purpose selection with toggle functionality
+
+### 5. Game Facilitation Mode
+- **Timer System**: Countdown timer with play/pause/reset functionality
+- **Step Navigation**: Step-by-step instruction walkthrough
+- **Progress Tracking**: Visual progress bar and step indicators
+- **Real-time Updates**: 1-second timer intervals with cleanup
+- **Visual Feedback**: Color-coded timer states (green/yellow/red)
+
+### 6. UI Component System
+**Components**: Button, Badge, Card
+- **Variant System**: Multiple visual variants for different contexts
+- **Accessibility**: Proper ARIA attributes and keyboard navigation
+- **Consistent Styling**: Unified design system across components
+
+## AI Integration Specifications
+
+### Game Generation Prompt Structure
+\`\`\`
+System: You are an expert Agile coach. Create an engaging Agile game with the following JSON format:
+{
+  "title": "Game Title",
+  "description": "Brief description",
+  "methodology": ["Array of methodologies"],
+  "purpose": ["Array of purposes"],
+  "minParticipants": number,
+  "maxParticipants": number,
+  "duration": number (in minutes),
+  "materials": ["List of required materials"],
+  "instructions": "Step by step instructions",
+  "facilitationTips": "Tips for facilitators",
+  "complexity": "Easy/Medium/Hard",
+  "learningOutcomes": ["List of learning outcomes"],
+  "isAccessible": boolean,
+  "accessibilityNotes": "If isAccessible is true, provide notes",
+  "requiredKnowledgeLevel": "New to Agile/Agile Basics/Agile Practitioner/Agile Master"
+}
+
+User request: [User's prompt]
+\`\`\`
+
+### AI Model Requirements
+- **Capability**: Text generation with JSON output
+- **Parameters**: Max tokens ~1000, temperature 0.7
+- **Error Handling**: JSON parsing with fallback error messages
+
+## Development Environment Setup
+\`\`\`json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  }
+}
+\`\`\`
+
+## Environment Variables Required
+\`\`\`env
+VITE_DATABASE_URL=your_database_connection_string
+VITE_DATABASE_ANON_KEY=your_database_anonymous_key
+\`\`\`
+
+## Styling Guidelines
+- **Color Scheme**: Teal and purple gradient theme
+- **Typography**: Clean, modern fonts with proper hierarchy
+- **Responsive Design**: Mobile-first approach with breakpoints
+- **Accessibility**: High contrast, screen reader support, keyboard navigation
+- **Visual Feedback**: Loading states, hover effects, transitions
+
+---
+
+# Comprehensive Regression Test Scripts
+
+## Test Suite 1: Core Application Functionality
+
+### Test 1.1: Application Initialization
+\`\`\`javascript
+describe('Application Initialization', () => {
+  test('should load the application without errors', async () => {
+    const { getByRole, queryByText } = render(<App />);
+    
+    // Verify main app components render
+    expect(getByRole('banner')).toBeInTheDocument(); // Header
+    expect(getByRole('main')).toBeInTheDocument(); // Main content
+    
+    // Check for no JavaScript errors
+    expect(console.error).not.toHaveBeenCalled();
+  });
+  
+  test('should display default library view', async () => {
+    const { getByTestId, getByText } = render(<App />);
+    
+    // Verify library view is active
+    expect(getByText('Library')).toHaveClass('active');
+    
+    // Check for game grid or loading state
+    await waitFor(() => {
+      expect(getByTestId('game-grid') || getByTestId('loading-spinner')).toBeInTheDocument();
+    });
+  });
+});
+\`\`\`
+
+### Test 1.2: Navigation System
+\`\`\`javascript
+describe('Navigation System', () => {
+  test('should navigate between main views', async () => {
+    const { getByText, getByTestId } = render(<App />);
+    
+    // Test Library → Create navigation
+    fireEvent.click(getByText('Create'));
+    await waitFor(() => {
+      expect(getByTestId('game-create-form')).toBeInTheDocument();
+    });
+    
+    // Test Create → Favorites navigation
+    fireEvent.click(getByText('Favorites'));
+    await waitFor(() => {
+      expect(getByTestId('favorites-grid')).toBeInTheDocument();
+    });
+    
+    // Return to Library
+    fireEvent.click(getByText('Library'));
+    await waitFor(() => {
+      expect(getByTestId('game-grid')).toBeInTheDocument();
+    });
+  });
+  
+  test('should handle mobile navigation', async () => {
+    // Set mobile viewport
+    Object.defineProperty(window, 'innerWidth', { value: 500 });
+    
+    const { getByRole, getByText } = render(<App />);
+    
+    // Find mobile menu button
+    const menuButton = getByRole('button', { name: /menu/i });
+    expect(menuButton).toBeInTheDocument();
+    
+    // Test menu toggle
+    fireEvent.click(menuButton);
+    await waitFor(() => {
+      expect(getByText('Create')).toBeVisible();
+    });
+  });
+});
+\`\`\`
+
+## Test Suite 2: Game Library Features
+
+### Test 2.1: Game Display and Grid
+\`\`\`javascript
+describe('Game Library Display', () => {
+  const mockGames = [
+    { id: '1', title: 'Test Game 1', methodology: ['Scrum'], complexity: 'Easy' },
+    { id: '2', title: 'Test Game 2', methodology: ['Kanban'], complexity: 'Medium' }
+  ];
+
+  test('should display games in responsive grid', async () => {
+    const { getAllByTestId } = render(<GameGrid games={mockGames} />);
+    
+    // Verify game cards are rendered
+    const gameCards = getAllByTestId('game-card');
+    expect(gameCards).toHaveLength(2);
+    
+    // Check responsive behavior
+    expect(gameCards[0]).toHaveClass('responsive-card');
+  });
+  
+  test('should handle empty states', () => {
+    const { getByText } = render(<GameGrid games={[]} isLoading={false} />);
+    expect(getByText(/no games found/i)).toBeInTheDocument();
+  });
+  
+  test('should display loading state', () => {
+    const { getByTestId } = render(<GameGrid games={[]} isLoading={true} />);
+    expect(getByTestId('loading-spinner')).toBeInTheDocument();
+  });
+});
+\`\`\`
+
+### Test 2.2: Advanced Filtering System
+\`\`\`javascript
+describe('Game Filtering', () => {
+  const mockGames = [
+    { 
+      id: '1', 
+      title: 'Scrum Game', 
+      methodology: ['Scrum'], 
+      purpose: ['Planning'],
+      complexity: 'Easy',
+      minParticipants: 3,
+      maxParticipants: 8,
+      duration: 30,
+      isAccessible: true
+    },
+    { 
+      id: '2', 
+      title: 'Kanban Game', 
+      methodology: ['Kanban'], 
+      purpose: ['Process Improvement'],
+      complexity: 'Medium',
+      minParticipants: 5,
+      maxParticipants: 12,
+      duration: 60,
+      isAccessible: false
+    }
+  ];
+
+  test('should filter by methodology', async () => {
+    const { getByLabelText, queryByText } = render(<App initialGames={mockGames} />);
+    
+    // Select Scrum methodology
+    fireEvent.click(getByLabelText('Scrum'));
+    
+    await waitFor(() => {
+      expect(queryByText('Scrum Game')).toBeInTheDocument();
+      expect(queryByText('Kanban Game')).not.toBeInTheDocument();
+    });
+  });
+  
+  test('should filter by multiple criteria', async () => {
+    const { getByLabelText, getByDisplayValue, queryByText } = render(<App initialGames={mockGames} />);
+    
+    // Apply multiple filters
+    fireEvent.click(getByLabelText('Medium'));
+    fireEvent.change(getByDisplayValue('0'), { target: { value: '5' } }); // participants
+    
+    await waitFor(() => {
+      expect(queryByText('Kanban Game')).toBeInTheDocument();
+      expect(queryByText('Scrum Game')).not.toBeInTheDocument();
+    });
+  });
+  
+  test('should perform text search', async () => {
+    const { getByPlaceholderText, queryByText } = render(<App initialGames={mockGames} />);
+    
+    // Search for "Scrum"
+    fireEvent.change(getByPlaceholderText(/search/i), { target: { value: 'Scrum' } });
+    
+    await waitFor(() => {
+      expect(queryByText('Scrum Game')).toBeInTheDocument();
+      expect(queryByText('Kanban Game')).not.toBeInTheDocument();
+    });
+  });
+  
+  test('should filter by accessibility', async () => {
+    const { getByLabelText, queryByText } = render(<App initialGames={mockGames} />);
+    
+    // Enable accessibility filter
+    fireEvent.click(getByLabelText(/accessible only/i));
+    
+    await waitFor(() => {
+      expect(queryByText('Scrum Game')).toBeInTheDocument();
+      expect(queryByText('Kanban Game')).not.toBeInTheDocument();
+    });
+  });
+  
+  test('should reset all filters', async () => {
+    const { getByText, queryByText } = render(<App initialGames={mockGames} />);
+    
+    // Apply a filter first
+    fireEvent.click(getByText('Scrum'));
+    
+    // Reset filters
+    fireEvent.click(getByText(/reset/i));
+    
+    await waitFor(() => {
+      expect(queryByText('Scrum Game')).toBeInTheDocument();
+      expect(queryByText('Kanban Game')).toBeInTheDocument();
+    });
+  });
+});
+\`\`\`
+
+## Test Suite 3: AI Integration
+
+### Test 3.1: AI Game Suggestion
+\`\`\`javascript
+describe('AI Game Suggestion', () => {
+  const mockAIResponse = {
+    generated_text: JSON.stringify({
+      title: 'AI Generated Game',
+      description: 'A test game',
+      methodology: ['Scrum'],
+      purpose: ['Team Building'],
+      minParticipants: 4,
+      maxParticipants: 8,
+      duration: 45,
+      materials: ['Cards', 'Timer'],
+      instructions: 'Step by step',
+      facilitationTips: 'Keep it fun',
+      complexity: 'Medium',
+      learningOutcomes: ['Collaboration'],
+      isAccessible: true,
+      accessibilityNotes: 'Inclusive design',
+      requiredKnowledgeLevel: 'Agile Basics'
+    })
+  };
+
+  beforeEach(() => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockAIResponse)
+      })
+    );
+  });
+
+  test('should generate games from custom prompts', async () => {
+    const { getByPlaceholderText, getByText, getByTestId } = render(<AIGameSuggestion />);
+    
+    // Enter custom prompt
+    fireEvent.change(getByPlaceholderText(/describe your ideal game/i), {
+      target: { value: 'A team building exercise for new team members' }
+    });
+    
+    // Generate game
+    fireEvent.click(getByText(/generate/i));
+    
+    // Wait for AI response
+    await waitFor(() => {
+      expect(getByText('AI Generated Game')).toBeInTheDocument();
+    });
+    
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('api'),
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('team building exercise')
+      })
+    );
+  });
+  
+  test('should handle AI generation errors', async () => {
+    global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
+    
+    const { getByText, getByPlaceholderText } = render(<AIGameSuggestion />);
+    
+    fireEvent.change(getByPlaceholderText(/describe your ideal game/i), {
+      target: { value: 'Test prompt' }
+    });
+    
+    fireEvent.click(getByText(/generate/i));
+    
+    await waitFor(() => {
+      expect(getByText(/failed to generate/i)).toBeInTheDocument();
+    });
+  });
+  
+  test('should save and rate generated games', async () => {
+    const mockSaveGame = jest.fn();
+    
+    const { getByText, getByRole } = render(
+      <AIGameSuggestion onGameGenerated={mockSaveGame} />
+    );
+    
+    // Mock having a generated game
+    const component = getByTestId('ai-suggestion');
+    
+    // Like the game
+    fireEvent.click(getByRole('button', { name: /like/i }));
+    
+    await waitFor(() => {
+      expect(mockSaveGame).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'AI Generated Game' })
+      );
+    });
+  });
+});
+\`\`\`
+
+### Test 3.2: AI-Assisted Game Creation
+\`\`\`javascript
+describe('AI-Assisted Creation', () => {
+  test('should auto-complete missing fields', async () => {
+    const { getByDisplayValue, getByText, getByLabelText } = render(<GameCreate />);
+    
+    // Fill in partial data
+    fireEvent.change(getByLabelText(/title/i), { target: { value: 'Partial Game' } });
+    fireEvent.change(getByLabelText(/description/i), { target: { value: 'A test game' } });
+    
+    // Trigger AI completion
+    fireEvent.click(getByText(/generate missing fields/i));
+    
+    await waitFor(() => {
+      expect(getByDisplayValue(/step by step/i)).toBeInTheDocument(); // AI-generated instructions
+    });
+  });
+  
+  test('should preserve user input during AI assistance', async () => {
+    const { getByDisplayValue, getByText, getByLabelText } = render(<GameCreate />);
+    
+    const userTitle = 'My Custom Game';
+    
+    // User enters title
+    fireEvent.change(getByLabelText(/title/i), { target: { value: userTitle } });
+    
+    // AI completes other fields
+    fireEvent.click(getByText(/generate missing fields/i));
+    
+    await waitFor(() => {
+      // User's title should be preserved
+      expect(getByDisplayValue(userTitle)).toBeInTheDocument();
+    });
+  });
+});
+\`\`\`
+
+## Test Suite 4: Game Management
+
+### Test 4.1: Game Creation
+\`\`\`javascript
+describe('Manual Game Creation', () => {
+  test('should validate required fields', async () => {
+    const { getByText, getByRole } = render(<GameCreate />);
+    
+    // Try to save without required fields
+    fireEvent.click(getByRole('button', { name: /save game/i }));
+    
+    await waitFor(() => {
+      expect(getByText(/title is required/i)).toBeInTheDocument();
+      expect(getByText(/description is required/i)).toBeInTheDocument();
+    });
+  });
+  
+  test('should create complete game', async () => {
+    const mockOnSave = jest.fn();
+    const { getByLabelText, getByRole, getByText } = render(<GameCreate onSaveGame={mockOnSave} />);
+    
+    // Fill all required fields
+    fireEvent.change(getByLabelText(/title/i), { target: { value: 'Test Game' } });
+    fireEvent.change(getByLabelText(/description/i), { target: { value: 'Test description' } });
+    fireEvent.click(getByText('Scrum')); // methodology
+    fireEvent.click(getByText('Team Building')); // purpose
+    fireEvent.change(getByLabelText(/min participants/i), { target: { value: '3' } });
+    fireEvent.change(getByLabelText(/max participants/i), { target: { value: '8' } });
+    fireEvent.change(getByLabelText(/duration/i), { target: { value: '30' } });
+    fireEvent.change(getByLabelText(/instructions/i), { target: { value: 'Test instructions' } });
+    
+    // Save game
+    fireEvent.click(getByRole('button', { name: /save game/i }));
+    
+    await waitFor(() => {
+      expect(mockOnSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Test Game',
+          description: 'Test description',
+          methodology: ['Scrum'],
+          purpose: ['Team Building']
+        })
+      );
+    });
+  });
+  
+  test('should manage dynamic arrays', async () => {
+    const { getByText, getByLabelText, getAllByLabelText } = render(<GameCreate />);
+    
+    // Add material
+    fireEvent.click(getByText(/add material/i));
+    fireEvent.change(getByLabelText(/material/i), { target: { value: 'Cards' } });
+    
+    // Add another material
+    fireEvent.click(getByText(/add material/i));
+    const materialInputs = getAllByLabelText(/material/i);
+    fireEvent.change(materialInputs[1], { target: { value: 'Timer' } });
+    
+    // Remove first material
+    const removeButtons = getAllByText(/remove/i);
+    fireEvent.click(removeButtons[0]);
+    
+    // Should have one material remaining
+    expect(getAllByLabelText(/material/i)).toHaveLength(1);
+  });
+});
+\`\`\`
+
+### Test 4.2: Game Detail View
+\`\`\`javascript
+describe('Game Detail Display', () => {
+  const mockGame = {
+    id: '1',
+    title: 'Test Game',
+    description: 'A comprehensive test game',
+    methodology: ['Scrum', 'Kanban'],
+    purpose: ['Team Building'],
+    minParticipants: 3,
+    maxParticipants: 8,
+    duration: 45,
+    materials: ['Cards', 'Timer'],
+    instructions: 'Detailed instructions',
+    facilitationTips: 'Keep it engaging',
+    complexity: 'Medium',
+    learningOutcomes: ['Collaboration', 'Communication'],
+    isAccessible: true,
+    accessibilityNotes: 'Suitable for all abilities',
+    requiredKnowledgeLevel: 'Agile Basics'
+  };
+
+  test('should display comprehensive game information', () => {
+    const { getByText } = render(<GameDetail game={mockGame} />);
+    
+    // Check all key information is displayed
+    expect(getByText('Test Game')).toBeInTheDocument();
+    expect(getByText('A comprehensive test game')).toBeInTheDocument();
+    expect(getByText('Scrum')).toBeInTheDocument();
+    expect(getByText('Kanban')).toBeInTheDocument();
+    expect(getByText('3-8 participants')).toBeInTheDocument();
+    expect(getByText('45 minutes')).toBeInTheDocument();
+    expect(getByText('Cards')).toBeInTheDocument();
+    expect(getByText('Timer')).toBeInTheDocument();
+  });
+  
+  test('should handle accessibility features', () => {
+    const { getByText } = render(<GameDetail game={mockGame} />);
+    
+    // Accessibility section should be visible
+    expect(getByText(/accessibility notes/i)).toBeInTheDocument();
+    expect(getByText('Suitable for all abilities')).toBeInTheDocument();
+  });
+  
+  test('should hide accessibility section when not accessible', () => {
+    const inaccessibleGame = { ...mockGame, isAccessible: false };
+    const { queryByText } = render(<GameDetail game={inaccessibleGame} />);
+    
+    expect(queryByText(/accessibility notes/i)).not.toBeInTheDocument();
+  });
+});
+\`\`\`
+
+## Test Suite 5: Game Facilitation
+
+### Test 5.1: Facilitator Mode
+\`\`\`javascript
+describe('Game Facilitator', () => {
+  const mockGame = {
+    id: '1',
+    title: 'Test Game',
+    duration: 2, // 2 minutes for testing
+    instructions: 'Step 1: Do this\\nStep 2: Do that\\nStep 3: Finish'
+  };
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('should initialize with correct timer duration', () => {
+    const { getByText } = render(<GameFacilitator game={mockGame} />);
+    
+    // Should show 2:00 (2 minutes)
+    expect(getByText('02:00')).toBeInTheDocument();
+  });
+  
+  test('should start and pause timer', () => {
+    const { getByRole, getByText } = render(<GameFacilitator game={mockGame} />);
+    
+    const playButton = getByRole('button', { name: /play/i });
+    
+    // Start timer
+    fireEvent.click(playButton);
+    
+    // Advance timer by 1 second
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    
+    // Should show 1:59
+    expect(getByText('01:59')).toBeInTheDocument();
+    
+    // Pause timer
+    const pauseButton = getByRole('button', { name: /pause/i });
+    fireEvent.click(pauseButton);
+    
+    // Advance timer - should not change
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    
+    expect(getByText('01:59')).toBeInTheDocument();
+  });
+  
+  test('should reset timer', () => {
+    const { getByRole, getByText } = render(<GameFacilitator game={mockGame} />);
+    
+    // Start and run timer
+    fireEvent.click(getByRole('button', { name: /play/i }));
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+    
+    // Reset timer
+    fireEvent.click(getByRole('button', { name: /reset/i }));
+    
+    // Should be back to original duration
+    expect(getByText('02:00')).toBeInTheDocument();
+  });
+  
+  test('should navigate through instruction steps', () => {
+    const { getByText, getByRole } = render(<GameFacilitator game={mockGame} />);
+    
+    // Should start at first step
+    expect(getByText('Step 1: Do this')).toBeInTheDocument();
+    
+    // Go to next step
+    fireEvent.click(getByRole('button', { name: /next/i }));
+    expect(getByText('Step 2: Do that')).toBeInTheDocument();
+    
+    // Go to previous step
+    fireEvent.click(getByRole('button', { name: /previous/i }));
+    expect(getByText('Step 1: Do this')).toBeInTheDocument();
+  });
+  
+  test('should show progress bar updates', () => {
+    const { getByRole } = render(<GameFacilitator game={mockGame} />);
+    
+    const progressBar = getByRole('progressbar');
+    
+    // Start timer
+    fireEvent.click(getByRole('button', { name: /play/i }));
+    
+    // Advance timer by half duration
+    act(() => {
+      jest.advanceTimersByTime(60000); // 1 minute of 2 minutes
+    });
+    
+    // Progress should be approximately 50%
+    expect(progressBar).toHaveStyle('width: 50%');
+  });
+  
+  test('should handle timer completion', () => {
+    const mockOnComplete = jest.fn();
+    const { getByRole } = render(<GameFacilitator game={mockGame} onComplete={mockOnComplete} />);
+    
+    // Start timer
+    fireEvent.click(getByRole('button', { name: /play/i }));
+    
+    // Complete the timer
+    act(() => {
+      jest.advanceTimersByTime(120000); // 2 minutes
+    });
+    
+    // Timer should stop at 00:00
+    expect(getByText('00:00')).toBeInTheDocument();
+  });
+});
+\`\`\`
+
+## Test Suite 6: Database Integration
+
+### Test 6.1: Data Persistence
+\`\`\`javascript
+describe('Database Operations', () => {
+  const mockDatabase = {
+    insert: jest.fn(() => Promise.resolve({ data: { id: 'new-id' } })),
+    select: jest.fn(() => Promise.resolve({ data: [] })),
+    update: jest.fn(() => Promise.resolve({ data: {} })),
+    from: jest.fn(() => mockDatabase)
+  };
+
+  beforeEach(() => {
+    global.supabase = mockDatabase;
+  });
+
+  test('should save liked games to database', async () => {
+    const { getByRole } = render(<AIGameSuggestion />);
+    
+    // Mock AI response and like the game
+    const likeButton = getByRole('button', { name: /like/i });
+    fireEvent.click(likeButton);
+    
+    await waitFor(() => {
+      expect(mockDatabase.insert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          game_data: expect.any(Object),
+          prompt: expect.any(String)
+        })
+      );
+    });
+  });
+  
+  test('should retrieve liked games from database', async () => {
+    mockDatabase.select.mockResolvedValueOnce({
+      data: [
+        { id: '1', game_data: { title: 'Saved Game' }, popularity: 5 }
+      ]
+    });
+    
+    const { getByText } = render(<App />);
+    
+    // Navigate to favorites
+    fireEvent.click(getByText('Favorites'));
+    
+    await waitFor(() => {
+      expect(getByText('Saved Game')).toBeInTheDocument();
+    });
+  });
+  
+  test('should update popularity on like/dislike', async () => {
+    const { getByRole } = render(<AIGameSuggestion />);
+    
+    // Like then dislike
+    fireEvent.click(getByRole('button', { name: /like/i }));
+    fireEvent.click(getByRole('button', { name: /dislike/i }));
+    
+    await waitFor(() => {
+      expect(mockDatabase.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          popularity: expect.any(Number)
+        })
+      );
+    });
+  });
+  
+  test('should handle database errors gracefully', async () => {
+    mockDatabase.insert.mockRejectedValueOnce(new Error('Database error'));
+    
+    const { getByRole, getByText } = render(<AIGameSuggestion />);
+    
+    fireEvent.click(getByRole('button', { name: /like/i }));
+    
+    await waitFor(() => {
+      expect(getByText(/failed to save/i)).toBeInTheDocument();
+    });
+  });
+});
+\`\`\`
+
+## Test Suite 7: Performance and Accessibility
+
+### Test 7.1: Performance Testing
+\`\`\`javascript
+describe('Performance', () => {
+  test('should handle large datasets efficiently', async () => {
+    const largeGameSet = Array.from({ length: 100 }, (_, i) => ({
+      id: \`game-\${i}\`,
+      title: \`Game \${i}\`,
+      methodology: ['Scrum'],
+      purpose: ['Team Building'],
+      complexity: 'Easy'
+    }));
+
+    const startTime = performance.now();
+    const { getByTestId } = render(<GameGrid games={largeGameSet} />);
+    const endTime = performance.now();
+    
+    // Should render within reasonable time (under 100ms)
+    expect(endTime - startTime).toBeLessThan(100);
+    
+    // Should implement pagination for large sets
+    expect(getByTestId('pagination')).toBeInTheDocument();
+  });
+  
+  test('should debounce search input', async () => {
+    const mockOnSearch = jest.fn();
+    const { getByPlaceholderText } = render(<GameFilter onFilterChange={mockOnSearch} />);
+    
+    const searchInput = getByPlaceholderText(/search/i);
+    
+    // Type quickly
+    fireEvent.change(searchInput, { target: { value: 'a' } });
+    fireEvent.change(searchInput, { target: { value: 'ab' } });
+    fireEvent.change(searchInput, { target: { value: 'abc' } });
+    
+    // Should not call onChange for every keystroke
+    expect(mockOnSearch).toHaveBeenCalledTimes(1);
+    
+    // Wait for debounce
+    await waitFor(() => {
+      expect(mockOnSearch).toHaveBeenLastCalledWith(
+        expect.objectContaining({ searchTerm: 'abc' })
+      );
+    }, { timeout: 1000 });
+  });
+});
+\`\`\`
+
+### Test 7.2: Accessibility Testing
+\`\`\`javascript
+describe('Accessibility', () => {
+  test('should support keyboard navigation', () => {
+    const { getAllByRole } = render(<Header />);
+    
+    const buttons = getAllByRole('button');
+    
+    // All buttons should be focusable
+    buttons.forEach(button => {
+      expect(button).toHaveAttribute('tabindex', '0');
+    });
+    
+    // Test tab navigation
+    fireEvent.keyDown(buttons[0], { key: 'Tab' });
+    expect(buttons[1]).toHaveFocus();
+  });
+  
+  test('should provide proper ARIA labels', () => {
+    const { getByRole } = render(<GameFacilitator game={mockGame} />);
+    
+    // Timer should have proper labels
+    expect(getByRole('timer')).toHaveAttribute('aria-label');
+    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow');
+  });
+  
+  test('should maintain focus management', () => {
+    const { getByText, getByRole } = render(<App />);
+    
+    // Navigate to detail view
+    fireEvent.click(getByText('View Details'));
+    
+    // Back button should receive focus
+    const backButton = getByRole('button', { name: /back/i });
+    expect(backButton).toHaveFocus();
+  });
+  
+  test('should provide screen reader announcements', () => {
+    const { getByRole } = render(<GameFacilitator game={mockGame} />);
+    
+    // Status region for timer updates
+    expect(getByRole('status')).toBeInTheDocument();
+    
+    // Start timer
+    fireEvent.click(getByRole('button', { name: /play/i }));
+    
+    // Should announce timer state change
+    expect(getByRole('status')).toHaveTextContent(/timer started/i);
+  });
+});
+\`\`\`
+
+## Test Suite 8: Integration Testing
+
+### Test 8.1: End-to-End Workflows
+\`\`\`javascript
+describe('Complete User Workflows', () => {
+  test('should complete full game discovery workflow', async () => {
+    const { getByText, getByPlaceholderText, getByRole } = render(<App />);
+    
+    // Search for a game
+    fireEvent.change(getByPlaceholderText(/search/i), { 
+      target: { value: 'Scrum' } 
+    });
+    
+    // Filter by methodology
+    fireEvent.click(getByText('Scrum'));
+    
+    // Select a game
+    fireEvent.click(getByText('View Details'));
+    
+    // Start facilitation
+    fireEvent.click(getByText('Start Game'));
+    
+    // Verify facilitator mode
+    await waitFor(() => {
+      expect(getByRole('timer')).toBeInTheDocument();
+    });
+  });
+  
+  test('should complete full game creation workflow', async () => {
+    const { getByText, getByLabelText, getByRole } = render(<App />);
+    
+    // Navigate to create
+    fireEvent.click(getByText('Create'));
+    
+    // Fill basic information
+    fireEvent.change(getByLabelText(/title/i), { 
+      target: { value: 'New Game' } 
+    });
+    fireEvent.change(getByLabelText(/description/i), { 
+      target: { value: 'Test description' } 
+    });
+    
+    // Use AI assistance
+    fireEvent.click(getByText(/generate missing fields/i));
+    
+    await waitFor(() => {
+      expect(getByLabelText(/instructions/i)).toHaveValue(/step/i);
+    });
+    
+    // Save game
+    fireEvent.click(getByRole('button', { name: /save/i }));
+    
+    // Should return to library
+    await waitFor(() => {
+      expect(getByText('New Game')).toBeInTheDocument();
+    });
+  });
+  
+  test('should complete AI suggestion workflow', async () => {
+    const { getByText, getByPlaceholderText, getByRole } = render(<App />);
+    
+    // Navigate to AI suggestion
+    fireEvent.click(getByText('AI Suggest'));
+    
+    // Enter prompt
+    fireEvent.change(getByPlaceholderText(/describe/i), {
+      target: { value: 'Team building for remote teams' }
+    });
+    
+    // Generate game
+    fireEvent.click(getByText('Generate'));
+    
+    // Like the game
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: /like/i }));
+    });
+    
+    // Should save to favorites
+    fireEvent.click(getByText('Favorites'));
+    
+    await waitFor(() => {
+      expect(getByText(/AI Generated/i)).toBeInTheDocument();
+    });
+  });
+});
+\`\`\`
+
+## Test Execution Instructions
+
+### Setup
+\`\`\`bash
+# Install testing dependencies
+npm install --save-dev @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom
+
+# Add test script to package.json
+{
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  }
+}
+\`\`\`
+
+### Configuration
+\`\`\`javascript
+// jest.config.js
+module.exports = {
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
+  moduleNameMapping: {
+    '\\\\.(css|less|scss|sass)$': 'identity-obj-proxy'
+  },
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/index.tsx',
+    '!src/setupTests.js'
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    }
+  }
+};
+\`\`\`
+
+### Running Tests
+\`\`\`bash
+# Run all tests
+npm test
+
+# Run specific test suite
+npm test -- --testNamePattern="Game Library"
+
+# Run with coverage report
+npm test -- --coverage
+
+# Run in watch mode during development
+npm run test:watch
+\`\`\`
+
+### Performance Benchmarks
+- **Initial Load**: < 3 seconds on 3G network
+- **Game Filtering**: < 500ms response time
+- **AI Generation**: < 10 seconds for game creation
+- **Database Operations**: < 1 second for CRUD operations
+- **Timer Accuracy**: ±100ms precision
+- **Memory Usage**: < 50MB for 1000+ games
+
+### Accessibility Compliance
+- **WCAG 2.1 Level AA** compliance required
+- **Color Contrast**: Minimum 4.5:1 ratio
+- **Keyboard Navigation**: Full functionality without mouse
+- **Screen Reader**: Compatible with NVDA, JAWS, VoiceOver
+- **Focus Management**: Logical tab order and focus indicators
+- **Text Alternatives**: Alt text for all images and icons
+
+---
+
+*This document is automatically updated with each code push to ensure accuracy and completeness.*
+`;
+
+            return content;
+          }
+
+          // Execute analysis and generate file
+          console.log('Analyzing codebase...');
+          const analysis = analyzeCodebase();
+          
+          console.log('Generating PromptTransfer.md...');
+          const content = generatePromptTransfer(analysis);
+          
+          // Write the updated file
+          fs.writeFileSync('PromptTransfer.md', content);
+          
+          console.log('PromptTransfer.md updated successfully!');
+          console.log('Analysis summary:');
+          console.log(`- Components: ${analysis.components.length}`);
+          console.log(`- Features: ${analysis.features.length}`);
+          console.log(`- Dependencies: ${Object.keys(analysis.dependencies).length}`);
+          console.log(`- Database schemas: ${analysis.dbSchema.length}`);
+          EOF
+
+          node analyze_codebase.js
+
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if git diff --quiet PromptTransfer.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit updated PromptTransfer.md
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add PromptTransfer.md
+          git commit -m "Auto-update PromptTransfer.md based on codebase changes [skip ci]"
+          git push
