@@ -3,14 +3,12 @@ import { ThumbsUp, ThumbsDown, Loader2 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Game } from '../types';
 import { createClient } from '@supabase/supabase-js';
-import { HfInference } from '@huggingface/inference';
+import { llmService } from '../services/llmService';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
-
-const hf = new HfInference(import.meta.env.VITE_HF_ACCESS_TOKEN);
 
 interface AIGameSuggestionProps {
   onGameGenerated: (game: Game) => void;
@@ -50,16 +48,7 @@ const AIGameSuggestion: React.FC<AIGameSuggestionProps> = ({ onGameGenerated }) 
 
       const userPrompt = prompt || "Suggest an engaging Agile game that promotes team collaboration";
 
-      const response = await hf.textGeneration({
-        model: "deepseek-ai/deepseek-v2-lite-chat",
-        inputs: `${systemPrompt}\n\nUser request: ${userPrompt}\n\nResponse:`,
-        parameters: {
-          max_new_tokens: 1000,
-          temperature: 0.7
-        }
-      });
-
-      const gameData = JSON.parse(response.generated_text);
+      const gameData = await llmService.generateCompleteGame(userPrompt, systemPrompt);
       const game: Game = {
         ...gameData,
         id: crypto.randomUUID(),

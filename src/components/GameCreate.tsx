@@ -3,9 +3,7 @@ import { ArrowLeft, Plus, Minus, Loader2, Coffee } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Game, AgileMethodology, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
 import { Badge } from './ui/Badge';
-import { HfInference } from '@huggingface/inference';
-
-const hf = new HfInference(import.meta.env.VITE_HF_ACCESS_TOKEN);
+import { llmService } from '../services/llmService';
 
 interface GameCreateProps {
   onBack: () => void;
@@ -64,7 +62,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
           acc[key] = value;
         }
         return acc;
-      }, {} as Record<string, any>);
+      }, {} as Record<string, unknown>);
 
       const systemPrompt = `You are an expert Agile coach. Based on the following partial game information, complete the missing fields to create a cohesive Agile game. Return ONLY a JSON object with all fields.
 
@@ -87,17 +85,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
         "requiredKnowledgeLevel": "New to Agile/Agile Basics/Agile Practitioner/Agile Master"
       }`;
 
-      const response = await hf.textGeneration({
-        model: "deepseek-ai/deepseek-v2-lite-chat",
-        inputs: `${systemPrompt}\n\nPartial game data: ${JSON.stringify(filledFields, null, 2)}\n\nComplete the game data, maintaining any existing values and generating appropriate values for missing fields. Return only the JSON object.`,
-        parameters: {
-          max_new_tokens: 1000,
-          temperature: 0.7,
-          return_full_text: false
-        }
-      });
-
-      const generatedGame = JSON.parse(response.generated_text);
+      const generatedGame = await llmService.generateGameData(filledFields, systemPrompt);
       
       const mergedGame = {
         ...DEFAULT_GAME,

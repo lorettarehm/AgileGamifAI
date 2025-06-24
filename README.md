@@ -60,12 +60,15 @@ npm run dev
 
 ### Environment Setup
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the root directory (use `.env.example` as a template):
 
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anonymous_key
+VITE_HF_ACCESS_TOKEN=your_huggingface_access_token
 ```
+
+**⚠️ Security Note**: This application requires an API key for AI features. In client-side applications like this, API keys in environment variables prefixed with `VITE_` are exposed in the built bundle. For production use, consider implementing a backend API or serverless functions to securely handle LLM calls.
 
 The application will be available at `http://localhost:5173`
 
