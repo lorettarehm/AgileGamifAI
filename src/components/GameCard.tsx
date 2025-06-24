@@ -11,7 +11,7 @@ interface GameCardProps {
   onViewDetails: (id: string) => void;
 }
 
-const methodologyColorMap: Record<string, string> = {
+const methodologyColorMap: Record<string, "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"> = {
   Scrum: 'default', // teal
   Kanban: 'secondary', // purple
   XP: 'purple',
@@ -21,7 +21,7 @@ const methodologyColorMap: Record<string, string> = {
   General: 'outline'
 };
 
-const knowledgeLevelColor: Record<string, string> = {
+const knowledgeLevelColor: Record<string, "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"> = {
   'New to Agile': 'success',
   'Agile Basics': 'default',
   'Agile Practitioner': 'warning',
@@ -52,7 +52,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onToggleFavorite, onViewDetai
       <CardContent className="flex-grow">
         <div className="flex flex-wrap gap-2 mb-4">
           {game.methodology.map((method) => (
-            <Badge key={method} variant={methodologyColorMap[method] || 'default'}>
+            <Badge key={method} variant={(methodologyColorMap[method] || 'default') as "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"}>
               {method}
             </Badge>
           ))}
@@ -69,7 +69,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onToggleFavorite, onViewDetai
           </div>
           <div className="flex items-center gap-2">
             <GraduationCap className="h-4 w-4 text-teal-500" />
-            <Badge variant={knowledgeLevelColor[game.requiredKnowledgeLevel]}>
+            <Badge variant={(knowledgeLevelColor[game.requiredKnowledgeLevel] || 'default') as "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"}>
               {game.requiredKnowledgeLevel}
             </Badge>
           </div>
