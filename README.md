@@ -46,6 +46,35 @@ VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anonymous_key
 ```
 
+**⚠️ Security Note**: This application requires an API key for AI features. In client-side applications like this, API keys in environment variables prefixed with `VITE_` are exposed in the built bundle. For production use, consider implementing a backend API or serverless functions to securely handle LLM calls.
+
+### User-Provided API Keys Option
+
+For production deployments, you can configure the application to let users provide their own HuggingFace API keys instead of using a shared key:
+
+**When to Use This Approach**:
+- ✅ Production deployments where you want to avoid exposing shared API keys
+- ✅ When users should control their own AI usage and costs
+- ✅ Educational or enterprise environments where users have their own HuggingFace accounts
+- ✅ When you want to scale AI features without managing centralized API costs
+
+**How It Works**:
+- Users enter their personal HuggingFace API key through the application interface
+- Keys are stored securely in the user's browser localStorage
+- Each user is responsible for their own API usage and billing
+- AI features work seamlessly once a valid key is provided
+
+**Getting Started with User Keys**:
+1. Users sign up for a free HuggingFace account at [huggingface.co](https://huggingface.co)
+2. Generate an API key from their HuggingFace settings
+3. Enter the key in the application when prompted
+4. Start using AI-powered game generation features
+
+**Important Considerations**:
+- Users are responsible for API costs and key security
+- Keys should be rotated regularly for security
+- See our detailed [Security Documentation](SECURITY.md#user-provided-api-keys) for complete implementation guidance
+
 The application will be available at `http://localhost:5173`
 
 ## 📱 Customer Journey Demo
@@ -309,3 +338,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Ready to transform your Agile practices?** [Start exploring games now!](https://agilegamifai.com) 🚀
+=======
