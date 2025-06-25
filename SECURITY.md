@@ -49,6 +49,141 @@ Client → LLM Service (with user's own API key)
 - Keys stored in browser localStorage (still client-side)
 - Users responsible for their own API usage and costs
 
+## User-Provided API Keys
+
+### Overview
+
+When deploying AgileGamifAI in environments where users supply their own HuggingFace API keys, this approach shifts the responsibility and cost of AI features to individual users while providing them with full control over their API usage.
+
+### Storage Implementation
+
+**localStorage Storage**:
+- API keys are stored in the browser's localStorage when provided by users
+- Keys persist across browser sessions until manually cleared
+- Storage is isolated per domain and user profile
+- Keys remain accessible to JavaScript running on the same origin
+
+### Security Trade-offs
+
+**Advantages**:
+- ✅ No shared API key exposed in application bundle
+- ✅ Users maintain full control over their API usage and costs
+- ✅ No central API key management required
+- ✅ Scales naturally with user base
+
+**Risks and Limitations**:
+- ⚠️ **Client-side storage**: Keys stored in localStorage are accessible to any JavaScript code running on the domain
+- ⚠️ **Browser access**: Keys can be viewed through browser developer tools
+- ⚠️ **XSS vulnerability**: Malicious scripts could potentially access stored keys
+- ⚠️ **No server-side validation**: Application cannot validate key authenticity before use
+- ⚠️ **User education required**: Users must understand security implications
+
+### User Responsibilities
+
+**API Key Management**:
+- Obtain API keys from HuggingFace directly
+- Keep keys confidential and never share them
+- Regularly rotate API keys (recommended: monthly)
+- Monitor API usage and billing on HuggingFace platform
+- Revoke compromised keys immediately
+
+**Security Best Practices**:
+- Use dedicated API keys for this application (not shared across services)
+- Consider using keys with limited permissions where possible
+- Log out or clear browser data when using shared/public computers
+- Be aware that API usage will be billed to their account
+
+**Cost Management**:
+- Understand HuggingFace pricing model
+- Monitor API usage to avoid unexpected charges
+- Set up billing alerts on HuggingFace platform
+- Consider API rate limiting in their own usage patterns
+
+### UI/UX Implementation Guidance
+
+**Key Input Interface**:
+```typescript
+// Recommended input component features
+interface APIKeyInputProps {
+  onKeySubmit: (key: string) => void;
+  onKeyClear: () => void;
+  isValid?: boolean;
+  validationMessage?: string;
+}
+```
+
+**Best Practices for Key Input**:
+- Use password-type input fields to hide keys during entry
+- Provide clear validation feedback (key format, test connection)
+- Include "Show/Hide" toggle for key verification
+- Offer "Test Key" functionality before saving
+- Provide clear instructions on obtaining keys from HuggingFace
+
+**Error Handling**:
+- **Invalid Key Format**: Clear message about expected format
+- **Authentication Failures**: Guide users to check key validity
+- **Rate Limiting**: Inform users about temporary restrictions
+- **Network Issues**: Distinguish between connectivity and authentication problems
+
+**User Education Elements**:
+- Link to HuggingFace API key generation documentation
+- Explain what the key is used for (AI game generation features)
+- Provide cost estimates or usage guidelines
+- Include security warnings about key confidentiality
+
+### Implementation Example
+
+```typescript
+// Example localStorage key management
+class UserAPIKeyManager {
+  private static readonly STORAGE_KEY = 'hf_api_key';
+  
+  static setKey(key: string): void {
+    if (this.validateKeyFormat(key)) {
+      localStorage.setItem(this.STORAGE_KEY, key);
+    } else {
+      throw new Error('Invalid API key format');
+    }
+  }
+  
+  static getKey(): string | null {
+    return localStorage.getItem(this.STORAGE_KEY);
+  }
+  
+  static clearKey(): void {
+    localStorage.removeItem(this.STORAGE_KEY);
+  }
+  
+  static hasKey(): boolean {
+    return !!this.getKey();
+  }
+  
+  private static validateKeyFormat(key: string): boolean {
+    // HuggingFace API keys start with 'hf_'
+    return typeof key === 'string' && key.startsWith('hf_') && key.length > 10;
+  }
+}
+```
+
+### Recommended User Workflow
+
+1. **First-time Setup**:
+   - User visits application
+   - Prompted to enter HuggingFace API key for AI features
+   - Key is validated and tested with a simple API call
+   - Key stored in localStorage upon successful validation
+
+2. **Ongoing Usage**:
+   - Key automatically loaded from localStorage
+   - Periodic validation to ensure key is still active
+   - Clear error messages if key becomes invalid
+   - Option to update or remove key from settings
+
+3. **Error Recovery**:
+   - Clear guidance when key expires or becomes invalid
+   - Easy path to update or replace keys
+   - Graceful degradation when AI features are unavailable
+
 ### Environment Variables
 
 Required environment variables:
