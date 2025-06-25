@@ -30,12 +30,15 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
             size="icon"
             className="md:hidden text-white hover:bg-white/20"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
-            <Menu className="h-6 w-6" />
+            <Menu className="h-6 w-6" aria-hidden="true" />
           </Button>
           
           {/* Desktop navigation */}
-          <nav className="hidden md:flex space-x-2">
+          <nav className="hidden md:flex space-x-2" role="navigation" aria-label="Main navigation">
             <Button
               variant={currentView === 'library' ? 'secondary' : 'ghost'}
               className={`flex items-center ${
@@ -45,8 +48,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               }`}
               onClick={() => onViewChange('library')}
               disabled={currentView === 'detail' || currentView === 'facilitator'}
+              aria-current={currentView === 'library' ? 'page' : undefined}
             >
-              <LayoutGrid className="h-4 w-4 mr-2" />
+              <LayoutGrid className="h-4 w-4 mr-2" aria-hidden="true" />
               Library
             </Button>
             
@@ -59,8 +63,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               }`}
               onClick={() => onViewChange('favorites')}
               disabled={currentView === 'detail' || currentView === 'facilitator'}
+              aria-current={currentView === 'favorites' ? 'page' : undefined}
             >
-              <Heart className="h-4 w-4 mr-2" />
+              <Heart className="h-4 w-4 mr-2" aria-hidden="true" />
               Favorites
             </Button>
             
@@ -73,8 +78,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               }`}
               onClick={() => onViewChange('create')}
               disabled={currentView === 'detail' || currentView === 'facilitator'}
+              aria-current={currentView === 'create' ? 'page' : undefined}
             >
-              <PlusCircle className="h-4 w-4 mr-2" />
+              <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
               Create
             </Button>
           </nav>
@@ -82,7 +88,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
 
         {/* Mobile navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden mt-4 space-y-2">
+          <nav id="mobile-navigation" className="md:hidden mt-4 space-y-2" role="navigation" aria-label="Mobile navigation">
             <Button
               variant={currentView === 'library' ? 'secondary' : 'ghost'}
               className={`flex items-center w-full justify-start ${
@@ -95,8 +101,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                 setIsMenuOpen(false);
               }}
               disabled={currentView === 'detail' || currentView === 'facilitator'}
+              aria-current={currentView === 'library' ? 'page' : undefined}
             >
-              <LayoutGrid className="h-4 w-4 mr-2" />
+              <LayoutGrid className="h-4 w-4 mr-2" aria-hidden="true" />
               Library
             </Button>
             
@@ -112,8 +119,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                 setIsMenuOpen(false);
               }}
               disabled={currentView === 'detail' || currentView === 'facilitator'}
+              aria-current={currentView === 'favorites' ? 'page' : undefined}
             >
-              <Heart className="h-4 w-4 mr-2" />
+              <Heart className="h-4 w-4 mr-2" aria-hidden="true" />
               Favorites
             </Button>
             
@@ -129,8 +137,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                 setIsMenuOpen(false);
               }}
               disabled={currentView === 'detail' || currentView === 'facilitator'}
+              aria-current={currentView === 'create' ? 'page' : undefined}
             >
-              <PlusCircle className="h-4 w-4 mr-2" />
+              <PlusCircle className="h-4 w-4 mr-2" aria-hidden="true" />
               Create
             </Button>
           </nav>

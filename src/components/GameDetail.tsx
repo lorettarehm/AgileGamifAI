@@ -43,22 +43,23 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
             size="icon"
             className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white mr-3"
             onClick={onBack}
+            aria-label="Go back to game library"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-5 w-5" aria-hidden="true" />
           </Button>
           <h1 className="text-2xl font-bold">{game.title}</h1>
         </div>
         
         <p className="text-white/90 mb-4">{game.description}</p>
         
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" role="list" aria-label="Game methodologies and purposes">
           {game.methodology.map((method) => (
-            <Badge key={method} variant={methodologyColorMap[method] || 'default'} className="bg-white/20 text-white border-white/30">
+            <Badge key={method} variant={methodologyColorMap[method] || 'default'} className="bg-white/20 text-white border-white/30" role="listitem">
               {method}
             </Badge>
           ))}
           {game.purpose.map((purpose) => (
-            <Badge key={purpose} variant="secondary" className="bg-white/20 text-white border-white/30">
+            <Badge key={purpose} variant="secondary" className="bg-white/20 text-white border-white/30" role="listitem">
               {purpose}
             </Badge>
           ))}
@@ -68,7 +69,7 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="flex items-center p-4 bg-gradient-to-br from-teal-50 to-teal-100 rounded-lg border border-teal-200">
-            <Users className="h-5 w-5 text-teal-600 mr-3" />
+            <Users className="h-5 w-5 text-teal-600 mr-3" aria-hidden="true" />
             <div>
               <p className="text-sm text-teal-600">Participants</p>
               <p className="font-medium text-teal-800">{game.minParticipants} - {game.maxParticipants} people</p>
@@ -76,7 +77,7 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
           </div>
           
           <div className="flex items-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
-            <Clock className="h-5 w-5 text-purple-600 mr-3" />
+            <Clock className="h-5 w-5 text-purple-600 mr-3" aria-hidden="true" />
             <div>
               <p className="text-sm text-purple-600">Duration</p>
               <p className="font-medium text-purple-800">{game.duration} minutes</p>
@@ -84,7 +85,7 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
           </div>
           
           <div className="flex items-center p-4 bg-gradient-to-br from-teal-50 to-purple-50 rounded-lg border border-teal-200">
-            <Award className="h-5 w-5 text-teal-600 mr-3" />
+            <Award className="h-5 w-5 text-teal-600 mr-3" aria-hidden="true" />
             <div>
               <p className="text-sm text-teal-600">Complexity</p>
               <p className="font-medium flex items-center">
@@ -94,7 +95,7 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
           </div>
 
           <div className="flex items-center p-4 bg-gradient-to-br from-purple-50 to-teal-50 rounded-lg border border-purple-200">
-            <GraduationCap className="h-5 w-5 text-purple-600 mr-3" />
+            <GraduationCap className="h-5 w-5 text-purple-600 mr-3" aria-hidden="true" />
             <div>
               <p className="text-sm text-purple-600">Required Level</p>
               <p className="font-medium flex items-center">
@@ -108,7 +109,7 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
 
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-3 flex items-center text-teal-800">
-            <Target className="h-5 w-5 text-teal-600 mr-2" />
+            <Target className="h-5 w-5 text-teal-600 mr-2" aria-hidden="true" />
             Learning Outcomes
           </h2>
           <ul className="list-disc pl-5 space-y-1">
@@ -120,7 +121,7 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
         
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-3 flex items-center text-teal-800">
-            <Package className="h-5 w-5 text-teal-600 mr-2" />
+            <Package className="h-5 w-5 text-teal-600 mr-2" aria-hidden="true" />
             Materials Needed
           </h2>
           <ul className="list-disc pl-5 space-y-1">
@@ -133,10 +134,10 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
         {game.isAccessible && (
           <div className="mb-6">
             <h2 className="text-lg font-semibold mb-3 flex items-center text-emerald-600">
-              <Accessibility className="h-5 w-5 mr-2" />
+              <Accessibility className="h-5 w-5 mr-2" aria-hidden="true" />
               Accessibility Notes
             </h2>
-            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-4 text-emerald-800">
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-4 text-emerald-800" role="note" aria-label="Accessibility information">
               {game.accessibilityNotes}
             </div>
           </div>
@@ -163,11 +164,15 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
         <div className="flex justify-center">
           <Button 
             size="lg"
-            className="min-w-[200px] bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600 shadow-lg hover:shadow-xl"
+            className="min-w-[200px] bg-gradient-to-r from-teal-700 to-purple-700 hover:from-teal-800 hover:to-purple-800 shadow-lg hover:shadow-xl"
             onClick={() => onStartGame(game.id)}
+            aria-describedby="start-game-description"
           >
             Start Game
           </Button>
+          <div id="start-game-description" className="sr-only">
+            Begin facilitating {game.title} with guided steps and timer
+          </div>
         </div>
       </div>
     </div>

@@ -121,8 +121,17 @@ describe('Accessibility Tests', () => {
       const button = screen.getByRole('button');
       
       // Check that we're using gradient backgrounds that should provide good contrast
-      expect(button.className).toContain('from-teal-500');
+      expect(button.className).toContain('from-teal-700');
       expect(button.className).toContain('text-white');
+    });
+
+    test('badge combinations should have sufficient contrast', () => {
+      render(<Badge variant="default">Scrum</Badge>);
+      const badge = screen.getByText('Scrum');
+      
+      // Teal-100 background with teal-800 text should pass WCAG AA
+      expect(badge.className).toContain('bg-teal-100');
+      expect(badge.className).toContain('text-teal-800');
     });
   });
 });

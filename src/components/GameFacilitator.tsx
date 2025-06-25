@@ -130,8 +130,9 @@ const GameFacilitator: React.FC<GameFacilitatorProps> = ({ game, onBack, onCompl
                 size="icon"
                 onClick={resetTimer}
                 className="rounded-full border-teal-300 text-teal-700 hover:bg-teal-50"
+                aria-label="Reset timer"
               >
-                <RotateCcw className="h-5 w-5" />
+                <RotateCcw className="h-5 w-5" aria-hidden="true" />
               </Button>
               
               <Button
@@ -140,9 +141,10 @@ const GameFacilitator: React.FC<GameFacilitatorProps> = ({ game, onBack, onCompl
                 onClick={toggleTimer}
                 className={`rounded-full px-6 ${
                   isRunning 
-                    ? 'bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600' 
-                    : 'bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700'
+                    ? 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800' 
+                    : 'bg-gradient-to-r from-teal-700 to-teal-800 hover:from-teal-800 hover:to-teal-900'
                 }`}
+                aria-label={isRunning ? 'Pause timer' : 'Start timer'}
               >
                 {isRunning ? (
                   <><Pause className="h-5 w-5 mr-2" /> Pause</>

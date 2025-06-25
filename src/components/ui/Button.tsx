@@ -7,8 +7,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 shadow-md hover:shadow-lg",
-        secondary: "bg-gradient-to-r from-purple-400 to-purple-500 text-white hover:from-purple-500 hover:to-purple-600 shadow-md hover:shadow-lg",
+        default: "bg-gradient-to-r from-teal-700 to-teal-800 text-white hover:from-teal-800 hover:to-teal-900 shadow-md hover:shadow-lg",
+        secondary: "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-md hover:shadow-lg",
         outline: "border border-teal-300 bg-white hover:bg-teal-50 text-teal-700 hover:border-teal-400",
         ghost: "hover:bg-teal-100 text-teal-700",
         link: "text-teal-600 underline-offset-4 hover:underline"
