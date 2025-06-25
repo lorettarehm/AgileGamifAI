@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Filter, ChevronDown, ChevronUp, Accessibility } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
-import { GameFilters, AgileMethodology, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
+import { GameFilters, AgileFramework, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
 
 interface GameFilterProps {
   filters: GameFilters;
@@ -12,7 +12,7 @@ interface GameFilterProps {
 const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const methodologies: AgileMethodology[] = ['Scrum', 'Kanban', 'XP', 'Lean', 'LeSS', 'Nexus', 'General'];
+  const frameworks: AgileFramework[] = ['Scrum', 'Kanban', 'XP', 'Lean', 'LeSS', 'Nexus', 'General'];
   const purposes: GamePurpose[] = [
     'Team Building', 
     'Problem Solving', 
@@ -30,13 +30,13 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
     'Agile Master'
   ];
 
-  const toggleMethodology = (methodology: AgileMethodology) => {
-    const current = filters.methodology;
-    const updated = current.includes(methodology)
-      ? current.filter(m => m !== methodology)
-      : [...current, methodology];
+  const toggleFramework = (framework: AgileFramework) => {
+    const current = filters.framework;
+    const updated = current.includes(framework)
+      ? current.filter(m => m !== framework)
+      : [...current, framework];
     
-    onFilterChange({ ...filters, methodology: updated });
+    onFilterChange({ ...filters, framework: updated });
   };
 
   const togglePurpose = (purpose: GamePurpose) => {
@@ -84,7 +84,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
 
   const resetFilters = () => {
     onFilterChange({
-      methodology: [],
+      framework: [],
       purpose: [],
       participants: 0,
       maxDuration: 120,
@@ -123,18 +123,18 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
       {expanded && (
         <div className="space-y-4 animate-fadeIn">
           <div>
-            <h3 className="font-medium text-teal-700 mb-2">Methodology</h3>
+            <h3 className="font-medium text-teal-700 mb-2">Framework</h3>
             <div className="flex flex-wrap gap-2">
-              {methodologies.map((methodology) => (
+              {frameworks.map((framework) => (
                 <Badge
-                  key={methodology}
-                  variant={filters.methodology.includes(methodology) ? "default" : "outline"}
+                  key={framework}
+                  variant={filters.framework.includes(framework) ? "default" : "outline"}
                   className={`cursor-pointer transition-colors ${
-                    filters.methodology.includes(methodology) ? '' : 'hover:bg-teal-100'
+                    filters.framework.includes(framework) ? '' : 'hover:bg-teal-100'
                   }`}
-                  onClick={() => toggleMethodology(methodology)}
+                  onClick={() => toggleFramework(framework)}
                 >
-                  {methodology}
+                  {framework}
                 </Badge>
               ))}
             </div>

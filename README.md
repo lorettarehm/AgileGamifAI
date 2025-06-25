@@ -8,7 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3+-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
 
-AgileGamifAI is a comprehensive platform that revolutionizes how Agile teams learn, collaborate, and improve through interactive games and activities. Combining AI-powered game generation with human-tested methodologies, this platform serves as your ultimate toolkit for enhancing team dynamics, learning outcomes, and Agile practices.
+AgileGamifAI is a comprehensive platform that revolutionizes how Agile teams learn, collaborate, and improve through interactive games and activities. Combining AI-powered game generation with human-tested frameworks, this platform serves as your ultimate toolkit for enhancing team dynamics, learning outcomes, and Agile practices.
 
 ## 🌟 Key Features
 
@@ -21,7 +21,7 @@ AgileGamifAI is a comprehensive platform that revolutionizes how Agile teams lea
 - **Intelligent Game Generation**: Create custom games using advanced AI that understands Agile principles
 - **Context-Aware Suggestions**: Get game recommendations based on your team's specific needs and challenges
 - **Rapid Prototyping**: Generate complete game structures in seconds, then refine with human expertise
-- **Smart Filtering**: Find the perfect game by methodology, team size, duration, complexity, and learning objectives
+- **Smart Filtering**: Find the perfect game by framework, team size, duration, complexity, and learning objectives
 - **Accessibility First**: Games designed with inclusivity in mind, featuring accessibility notes and adaptations
 - **Step-by-Step Guidance**: Detailed facilitation instructions
 - **Mobile-Responsive**: Facilitate from any device, anywhere
@@ -91,7 +91,7 @@ The application will be available at `http://localhost:5173`
 1. Opens AgileGamifAI in her browser
 2. Navigates to the Game Library
 3. Applies filters:
-   - Methodology: "Scrum"
+   - Framework: "Scrum"
    - Purpose: "Retrospective"
    - Participants: "8"
    - Duration: "30 minutes"
@@ -186,7 +186,7 @@ Client (React) → Serverless Functions → LLM API
 ```javascript
 // Filter games for Scrum teams
 const scrumGames = games.filter(game => 
-  game.methodology.includes('Scrum')
+  game.framework.includes('Scrum')
 );
 
 // Filter by team size and duration
@@ -202,7 +202,7 @@ const quickTeamBuilders = games.filter(game =>
 
 ```javascript
 const perfectGame = {
-  methodology: ['Scrum', 'Kanban'],
+  framework: ['Scrum', 'Kanban'],
   purpose: ['Retrospective'],
   participants: 6,
   maxDuration: 45,

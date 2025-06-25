@@ -16,7 +16,7 @@ Create a modern web application called "AgileGamifAI" that serves as a comprehen
 
 ### Type Definitions
 ```typescript
-export type AgileMethodology = 'Scrum' | 'Kanban' | 'XP' | 'Lean' | 'LeSS' | 'Nexus' | 'General';
+export type AgileFramework = 'Scrum' | 'Kanban' | 'XP' | 'Lean' | 'LeSS' | 'Nexus' | 'General';
 export type GamePurpose = 'Team Building' | 'Problem Solving' | 'Retrospective' | 'Estimation' | 'Planning' | 'Prioritization' | 'Process Improvement';
 export type GameComplexity = 'Easy' | 'Medium' | 'Hard';
 export type AgileKnowledgeLevel = 'New to Agile' | 'Agile Basics' | 'Agile Practitioner' | 'Agile Master';
@@ -25,7 +25,7 @@ export interface Game {
   id: string;
   title: string;
   description: string;
-  methodology: AgileMethodology[];
+  framework: AgileFramework[];
   purpose: GamePurpose[];
   minParticipants: number;
   maxParticipants: number;
@@ -42,7 +42,7 @@ export interface Game {
 }
 
 export interface GameFilters {
-  methodology: AgileMethodology[];
+  framework: AgileFramework[];
   purpose: GamePurpose[];
   participants: number;
   maxDuration: number;
@@ -65,7 +65,7 @@ export interface GameFilters {
 ### 2. Game Library System
 **Components**: GameGrid, GameCard, GameFilter
 - **Grid Display**: Responsive grid layout for game cards
-- **Advanced Filtering**: Multi-criteria filtering by methodology, purpose, complexity, knowledge level, participants, duration, search terms, accessibility
+- **Advanced Filtering**: Multi-criteria filtering by framework, purpose, complexity, knowledge level, participants, duration, search terms, accessibility
 - **Game Cards**: Display game overview with key metadata and actions
 - **Pagination**: Page-based navigation for large game collections
 
@@ -82,7 +82,7 @@ export interface GameFilters {
 - **AI Assistance**: Auto-complete missing fields using AI when partial data is provided
 - **Validation**: Required field validation with error display
 - **Dynamic Arrays**: Add/remove materials and learning outcomes
-- **Multi-Select**: Methodology and purpose selection with toggle functionality
+- **Multi-Select**: Framework and purpose selection with toggle functionality
 
 ### 5. Game Facilitator Mode (GameFacilitator.tsx)
 - **Timer System**: Countdown timer with play/pause/reset functionality
@@ -140,7 +140,7 @@ System: You are an expert Agile coach. Create an engaging Agile game with the fo
 {
   "title": "Game Title",
   "description": "Brief description",
-  "methodology": ["Array of methodologies"],
+  "framework": ["Array of frameworks"],
   "purpose": ["Array of purposes"],
   "minParticipants": number,
   "maxParticipants": number,
@@ -276,8 +276,8 @@ describe('Game Library Display', () => {
 ### Test 2.2: Advanced Filtering System
 ```javascript
 describe('Game Filtering', () => {
-  test('should filter by methodology', () => {
-    // Test single and multiple methodology selection
+  test('should filter by framework', () => {
+    // Test single and multiple framework selection
     // Verify filtered results accuracy
     // Check filter state persistence
   });
@@ -368,7 +368,7 @@ describe('Manual Game Creation', () => {
   });
   
   test('should support multi-select fields', () => {
-    // Test methodology selection
+    // Test framework selection
     // Verify purpose selection
     // Check selection state management
   });

@@ -11,7 +11,7 @@ describe('GameFilter', () => {
     jest.clearAllMocks();
   });
 
-  test('should filter by methodology', () => {
+  test('should filter by framework', () => {
     const filters = createMockFilters();
     
     render(
@@ -21,17 +21,17 @@ describe('GameFilter', () => {
       />
     );
 
-    // First expand the filter panel to access methodology badges
+    // First expand the filter panel to access framework badges
     const expandButton = screen.getByText(/show filters/i);
     fireEvent.click(expandButton);
 
-    // Test single methodology selection
+    // Test single framework selection
     const scrumBadge = screen.getByText('Scrum');
     fireEvent.click(scrumBadge);
     
     expect(mockOnFilterChange).toHaveBeenCalledWith({
       ...filters,
-      methodology: ['Scrum']
+      framework: ['Scrum']
     });
   });
 
@@ -105,7 +105,7 @@ describe('GameFilter', () => {
 
   test('should handle combined filter behavior', () => {
     const filters = createMockFilters({
-      methodology: ['Scrum'],
+      framework: ['Scrum'],
       purpose: ['Team Building']
     });
     
@@ -120,19 +120,19 @@ describe('GameFilter', () => {
     const expandButton = screen.getByText(/show filters/i);
     fireEvent.click(expandButton);
 
-    // Test adding another methodology
+    // Test adding another framework
     const kanbanBadge = screen.getByText('Kanban');
     fireEvent.click(kanbanBadge);
     
     expect(mockOnFilterChange).toHaveBeenCalledWith({
       ...filters,
-      methodology: ['Scrum', 'Kanban']
+      framework: ['Scrum', 'Kanban']
     });
   });
 
   test('should handle filter reset functionality', () => {
     const filters = createMockFilters({
-      methodology: ['Scrum'],
+      framework: ['Scrum'],
       purpose: ['Team Building'],
       searchTerm: 'test',
       accessibleOnly: true

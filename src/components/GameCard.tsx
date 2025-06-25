@@ -11,7 +11,7 @@ interface GameCardProps {
   onViewDetails: (id: string) => void;
 }
 
-const methodologyColorMap: Record<string, "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"> = {
+const frameworkColorMap: Record<string, "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"> = {
   Scrum: 'default', // teal
   Kanban: 'secondary', // purple
   XP: 'purple',
@@ -51,8 +51,8 @@ const GameCard: React.FC<GameCardProps> = ({ game, onToggleFavorite, onViewDetai
       
       <CardContent className="flex-grow">
         <div className="flex flex-wrap gap-2 mb-4">
-          {game.methodology.map((method) => (
-            <Badge key={method} variant={(methodologyColorMap[method] || 'default') as "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"}>
+          {game.framework.map((method) => (
+            <Badge key={method} variant={(frameworkColorMap[method] || 'default') as "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"}>
               {method}
             </Badge>
           ))}
