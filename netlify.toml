@@ -1,0 +1,29 @@
+[build]
+  # Build command for the main application
+  command = "npm run build"
+  # Directory to publish
+  publish = "dist"
+
+[functions]
+  # Directory for serverless functions
+  directory = "netlify/functions"
+  # Runtime for Node.js functions
+  node_bundler = "esbuild"
+
+[[redirects]]
+  # Handle client-side routing
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["anonymous"]}
+
+# Environment variables for functions (example)
+[context.production.environment]
+  # HF_ACCESS_TOKEN should be set in Netlify UI
+  NODE_ENV = "production"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "development"
+
+[context.branch-deploy.environment]
+  NODE_ENV = "development"

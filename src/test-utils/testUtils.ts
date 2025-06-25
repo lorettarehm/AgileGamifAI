@@ -91,5 +91,5 @@ export const mockSupabaseClient = {
 export const mockEnvVars = {
   VITE_SUPABASE_URL: 'https://test.supabase.co',
   VITE_SUPABASE_ANON_KEY: 'test-key',
-  VITE_HF_ACCESS_TOKEN: 'test-token',
+  // Note: VITE_HF_ACCESS_TOKEN removed - API keys now handled server-side
 };

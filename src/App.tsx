@@ -7,7 +7,7 @@ import GameDetail from './components/GameDetail';
 import GameCreate from './components/GameCreate';
 import GameFacilitator from './components/GameFacilitator';
 import { Button } from './components/ui/Button';
-import { Coffee, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BookOpenText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -178,8 +178,8 @@ function App() {
           className="flex items-center gap-2 border-teal-300 text-teal-700 hover:bg-teal-50"
           onClick={() => window.open('https://coff.ee/AgileGamifAI', '_blank')}
         >
-          <Coffee className="h-4 w-4" />
-          Buy me a ☕️
+          <BookOpenText className="h-4 w-4" />
+          Buy me a Book 📚
         </Button>
       </div>
     </div>

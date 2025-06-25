@@ -1,14 +1,12 @@
 /**
  * LLM Service - Secure API layer for Language Model interactions
  * 
- * SECURITY NOTE: This service encapsulates LLM API access to minimize direct exposure
- * of API keys in component code. However, in a client-side only application, 
- * environment variables prefixed with VITE_ are still exposed in the built bundle.
+ * SECURITY IMPROVEMENT: This service now calls secure serverless functions
+ * instead of exposing API keys in the client bundle. API keys are kept
+ * server-side only, preventing exposure to end users.
  * 
- * For production environments, consider:
- * 1. Moving to a backend API that handles LLM calls server-side
- * 2. Using serverless functions as a proxy
- * 3. Implementing user-based API key management
+ * Architecture:
+ * Client → Serverless Function → LLM Service (API keys secure)
  */
 
 import { HfInference } from '@huggingface/inference';
@@ -36,10 +34,9 @@ function getEnvVar(name: string): string | undefined {
 
 // Environment configuration with validation
 interface LLMConfig {
-  apiKey: string;
-  defaultModel: string;
-  maxTokens: number;
-  temperature: number;
+  baseUrl: string;
+  generateGameDataEndpoint: string;
+  generateCompleteGameEndpoint: string;
 }
 
 // Rate limiting implementation for client-side protection
@@ -87,8 +84,7 @@ export class RateLimitError extends Error {
 }
 
 class LLMService {
-  private hf: HfInference | null = null;
-  private config: LLMConfig | null = null;
+  private config: LLMConfig;
   private initialized = false;
   private rateLimiter: RateLimiter;
 
@@ -102,8 +98,17 @@ class LLMService {
     this.rateLimiter = new RateLimiter(maxRequests, timeWindow);
   }
 
+  constructor() {
+    // Configure endpoints - will work for both local development and production
+    this.config = {
+      baseUrl: this.getBaseUrl(),
+      generateGameDataEndpoint: '/.netlify/functions/generateGameData',
+      generateCompleteGameEndpoint: '/.netlify/functions/generateCompleteGame'
+    };
+  }
+
   /**
-   * Initialize the LLM service with secure configuration
+   * Get the appropriate base URL for API calls
    */
   private initialize(): void {
     if (this.initialized) return;
@@ -119,15 +124,14 @@ class LLMService {
       console.error('LLM Service: Invalid API key format.');
       return;
     }
+    return '';
+  }
 
-    this.config = {
-      apiKey: apiKey.trim(),
-      defaultModel: 'deepseek-ai/deepseek-v2-lite-chat',
-      maxTokens: 1000,
-      temperature: 0.7
-    };
-
-    this.hf = new HfInference(this.config.apiKey);
+  /**
+   * Initialize the LLM service
+   */
+  private initialize(): void {
+    if (this.initialized) return;
     this.initialized = true;
   }
 
@@ -158,7 +162,7 @@ class LLMService {
    */
   public isAvailable(): boolean {
     this.initialize();
-    return this.hf !== null && this.config !== null;
+    return true; // Service is available if serverless functions are deployed
   }
 
   /**
@@ -169,25 +173,24 @@ class LLMService {
     systemPrompt: string
   ): Promise<Record<string, unknown>> {
     if (!this.isAvailable()) {
-      throw new Error('LLM service is not available. Please check your API key configuration.');
+      throw new Error('LLM service is not available.');
     }
 
     // Check rate limits before making API call
     this.checkRateLimit();
 
     try {
-      const prompt = `${systemPrompt}\n\nPartial game data: ${JSON.stringify(partialGameData, null, 2)}\n\nComplete the game data, maintaining any existing values and generating appropriate values for missing fields. Return only the JSON object.`;
-
-      const response = await this.hf!.textGeneration({
-        model: this.config!.defaultModel,
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: this.config!.maxTokens,
-          temperature: this.config!.temperature,
-          return_full_text: false
-        }
+      const response = await fetch(`${this.config.baseUrl}${this.config.generateGameDataEndpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          partialGameData,
+          systemPrompt
+        })
       });
-
+      
       // Record successful request for rate limiting
       this.rateLimiter.recordRequest();
 
@@ -195,7 +198,8 @@ class LLMService {
         throw new Error('No response generated from LLM service');
       }
 
-      return JSON.parse(response.generated_text);
+      const result = await response.json();
+      return result.data;
     } catch (error) {
       // Don't record failed requests in rate limiter to avoid penalizing users for API errors
       if (error instanceof RateLimitError) {
@@ -214,22 +218,22 @@ class LLMService {
     systemPrompt: string
   ): Promise<Record<string, unknown>> {
     if (!this.isAvailable()) {
-      throw new Error('LLM service is not available. Please check your API key configuration.');
+      throw new Error('LLM service is not available.');
     }
 
     // Check rate limits before making API call
     this.checkRateLimit();
 
     try {
-      const fullPrompt = `${systemPrompt}\n\nUser request: ${userPrompt}\n\nResponse:`;
-
-      const response = await this.hf!.textGeneration({
-        model: this.config!.defaultModel,
-        inputs: fullPrompt,
-        parameters: {
-          max_new_tokens: this.config!.maxTokens,
-          temperature: this.config!.temperature
-        }
+      const response = await fetch(`${this.config.baseUrl}${this.config.generateCompleteGameEndpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userPrompt,
+          systemPrompt
+        })
       });
 
       // Record successful request for rate limiting
@@ -239,7 +243,8 @@ class LLMService {
         throw new Error('No response generated from LLM service');
       }
 
-      return JSON.parse(response.generated_text);
+      const result = await response.json();
+      return result.data;
     } catch (error) {
       // Don't record failed requests in rate limiter to avoid penalizing users for API errors
       if (error instanceof RateLimitError) {
