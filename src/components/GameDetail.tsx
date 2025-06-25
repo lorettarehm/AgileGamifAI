@@ -88,7 +88,7 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
             <div>
               <p className="text-sm text-teal-600">Complexity</p>
               <p className="font-medium flex items-center">
-                <Badge variant={complexityColor as any}>{game.complexity}</Badge>
+                <Badge variant={complexityColor as "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"}>{game.complexity}</Badge>
               </p>
             </div>
           </div>

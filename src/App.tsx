@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Game, GameFilters } from './types';
-import { sampleGames } from './data/games';
 import Header from './components/Header';
 import GameFilter from './components/GameFilter';
 import GameGrid from './components/GameGrid';
@@ -31,7 +30,6 @@ function App() {
     accessibleOnly: false
   });
   const [currentView, setCurrentView] = useState<'library' | 'create' | 'favorites' | 'detail' | 'facilitator'>('library');
-  const [facilitation, setFacilitation] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -149,24 +147,20 @@ function App() {
 
   const handleBackToLibrary = () => {
     setSelectedGameId(null);
-    setFacilitation(false);
     setCurrentView('library');
   };
 
-  const handleStartGame = (id: string) => {
-    setFacilitation(true);
+  const handleStartGame = () => {
     setCurrentView('facilitator');
   };
 
   const handleCompleteGame = () => {
-    setFacilitation(false);
     setCurrentView('detail');
   };
 
   const handleViewChange = (view: 'library' | 'create' | 'favorites') => {
     setCurrentView(view);
     setSelectedGameId(null);
-    setFacilitation(false);
     setCurrentPage(1);
   };
 
