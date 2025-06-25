@@ -44,30 +44,7 @@ Create a `.env` file in the root directory (use `.env.example` as a template):
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anonymous_key
-VITE_HF_ACCESS_TOKEN=your_huggingface_access_token
 ```
-
-## 🚨 IMPORTANT SECURITY WARNING
-
-**🔐 API Keys Are Exposed in Client-Side Builds**
-
-This application uses a client-side architecture that **exposes API keys in the built JavaScript bundle**. Anyone can:
-- Extract API keys from browser developer tools
-- View keys in the built application source
-- Access keys through network traffic inspection
-
-### For Development & Testing Only
-- ✅ Use for local development and testing
-- ✅ Use demo/limited API keys for public deployments
-- ❌ **NEVER use production API keys in client builds**
-- ❌ **NEVER use high-limit or billing-enabled keys**
-
-### Production Deployment Options
-1. **Backend API** (Recommended) - Move API calls to your server
-2. **Serverless Functions** - Use Vercel/Netlify/AWS Lambda as proxy
-3. **User-Provided Keys** - Let users input their own API keys
-
-📖 **See [SECURITY.md](SECURITY.md) for complete security guidance and mitigation strategies.**
 
 The application will be available at `http://localhost:5173`
 
@@ -147,9 +124,19 @@ The application will be available at `http://localhost:5173`
 | **Styling** | Tailwind CSS | Responsive, utility-first styling |
 | **Build Tool** | Vite | Fast development and optimized builds |
 | **Database** | Supabase | Real-time database and authentication |
-| **AI Integration** | Hugging Face API | Natural language processing for game generation |
+| **AI Integration** | Hugging Face API + Serverless Functions | **Secure** natural language processing for game generation |
+| **Serverless** | Netlify Functions | **Secure API proxy** for LLM calls |
 | **Icons** | Lucide React | Consistent, accessible iconography |
 | **State Management** | React Hooks | Lightweight state management |
+
+### 🔒 **Security Architecture**
+
+```
+Client (React) → Serverless Functions → LLM API
+```
+- **API keys protected server-side**
+- **Zero client-side exposure**
+- **Secure serverless architecture**
 
 ## 🎨 Design System
 
@@ -208,10 +195,18 @@ AgileGamifAI/
 │   │   ├── GameDetail.tsx  # Detailed game view
 │   │   ├── GameCreate.tsx  # Game creation interface
 │   │   └── GameFacilitator.tsx # Facilitation mode
+│   ├── services/           # API services (secure client-side)
+│   │   └── llmService.ts   # LLM service client
 │   ├── data/               # Sample data and constants
 │   ├── types/              # TypeScript type definitions
 │   └── App.tsx             # Main application component
+├── netlify/
+│   └── functions/          # 🔒 Secure serverless functions
+│       ├── generateGameData.js      # AI game completion endpoint
+│       ├── generateCompleteGame.js  # AI game generation endpoint
+│       └── package.json    # Serverless function dependencies
 ├── public/                 # Static assets
+├── netlify.toml           # Netlify deployment configuration
 └── dist/                   # Built application
 ```
 
@@ -226,6 +221,25 @@ npm run preview      # Preview production build
 # Code Quality
 npm run lint         # Run ESLint
 npm run type-check   # Run TypeScript compiler
+
+# Development with Serverless Functions (Recommended)
+netlify dev          # Start development server with functions
+netlify functions:serve  # Serve functions locally
+```
+
+### Local Development with Serverless Functions
+
+For full functionality including AI features:
+
+```bash
+# Install Netlify CLI globally
+npm install -g netlify-cli
+
+# Set environment variable for local functions
+netlify env:set HF_ACCESS_TOKEN your_huggingface_access_token
+
+# Start development server with functions
+netlify dev
 ```
 
 ### Contributing

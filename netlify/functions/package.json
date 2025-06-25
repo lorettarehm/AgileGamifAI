@@ -1,0 +1,7 @@
+{
+  "name": "agile-games-functions",
+  "private": true,
+  "dependencies": {
+    "@huggingface/inference": "^2.6.4"
+  }
+}
