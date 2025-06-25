@@ -34,7 +34,7 @@ Object.defineProperty(global, 'importMeta', {
     env: {
       VITE_SUPABASE_URL: 'https://test.supabase.co',
       VITE_SUPABASE_ANON_KEY: 'test-key',
-      VITE_HF_ACCESS_TOKEN: 'test-token',
+      // Note: VITE_HF_ACCESS_TOKEN removed - API keys now handled server-side
     }
   }
 });
@@ -42,4 +42,4 @@ Object.defineProperty(global, 'importMeta', {
 // Mock Supabase environment variables
 process.env.VITE_SUPABASE_URL = 'https://test.supabase.co';
 process.env.VITE_SUPABASE_ANON_KEY = 'test-key';
-process.env.VITE_HF_ACCESS_TOKEN = 'test-token';
+// Note: VITE_HF_ACCESS_TOKEN removed - API keys now handled server-side

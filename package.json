@@ -15,7 +15,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@huggingface/inference": "^2.6.4",
     "@supabase/supabase-js": "^2.39.3",
     "class-variance-authority": "^0.7.0",
     "lucide-react": "^0.344.0",

@@ -44,7 +44,6 @@ Create a `.env` file in the root directory (use `.env.example` as a template):
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anonymous_key
-VITE_HF_ACCESS_TOKEN=your_huggingface_access_token
 ```
 
 **⚠️ Security Note**: This application requires an API key for AI features. In client-side applications like this, API keys in environment variables prefixed with `VITE_` are exposed in the built bundle. For production use, consider implementing a backend API or serverless functions to securely handle LLM calls.
@@ -154,9 +153,19 @@ The application will be available at `http://localhost:5173`
 | **Styling** | Tailwind CSS | Responsive, utility-first styling |
 | **Build Tool** | Vite | Fast development and optimized builds |
 | **Database** | Supabase | Real-time database and authentication |
-| **AI Integration** | Hugging Face API | Natural language processing for game generation |
+| **AI Integration** | Hugging Face API + Serverless Functions | **Secure** natural language processing for game generation |
+| **Serverless** | Netlify Functions | **Secure API proxy** for LLM calls |
 | **Icons** | Lucide React | Consistent, accessible iconography |
 | **State Management** | React Hooks | Lightweight state management |
+
+### 🔒 **Security Architecture**
+
+```
+Client (React) → Serverless Functions → LLM API
+```
+- **API keys protected server-side**
+- **Zero client-side exposure**
+- **Secure serverless architecture**
 
 ## 🎨 Design System
 
@@ -215,10 +224,18 @@ AgileGamifAI/
 │   │   ├── GameDetail.tsx  # Detailed game view
 │   │   ├── GameCreate.tsx  # Game creation interface
 │   │   └── GameFacilitator.tsx # Facilitation mode
+│   ├── services/           # API services (secure client-side)
+│   │   └── llmService.ts   # LLM service client
 │   ├── data/               # Sample data and constants
 │   ├── types/              # TypeScript type definitions
 │   └── App.tsx             # Main application component
+├── netlify/
+│   └── functions/          # 🔒 Secure serverless functions
+│       ├── generateGameData.js      # AI game completion endpoint
+│       ├── generateCompleteGame.js  # AI game generation endpoint
+│       └── package.json    # Serverless function dependencies
 ├── public/                 # Static assets
+├── netlify.toml           # Netlify deployment configuration
 └── dist/                   # Built application
 ```
 
@@ -233,11 +250,37 @@ npm run preview      # Preview production build
 # Code Quality
 npm run lint         # Run ESLint
 npm run type-check   # Run TypeScript compiler
+
+# Development with Serverless Functions (Recommended)
+netlify dev          # Start development server with functions
+netlify functions:serve  # Serve functions locally
+```
+
+### Local Development with Serverless Functions
+
+For full functionality including AI features:
+
+```bash
+# Install Netlify CLI globally
+npm install -g netlify-cli
+
+# Set environment variable for local functions
+netlify env:set HF_ACCESS_TOKEN your_huggingface_access_token
+
+# Start development server with functions
+netlify dev
 ```
 
 ### Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+**🚨 SECURITY GUIDELINES FOR CONTRIBUTORS:**
+- **NEVER commit production API keys** to version control
+- Use demo/test keys with limited quotas for development
+- Test with `.env.local` (git-ignored) for personal API keys
+- Document any new security considerations in SECURITY.md
+- Review the [Security Policy](SECURITY.md) before contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -262,9 +305,14 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🔒 Privacy & Security
 
+**⚠️ CRITICAL SECURITY LIMITATION: API keys are exposed in client-side builds.**
+
 - No personal data collection without consent
-- Secure API key management
+- **API keys visible in built JavaScript bundle** - see [SECURITY.md](SECURITY.md)
 - Input sanitization and validation
+- **NOT recommended for production without backend security layer**
+
+For production deployments, implement server-side API handling or use demo keys only.
 - HTTPS-only deployment
 
 ## 💖 Support
@@ -290,3 +338,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Ready to transform your Agile practices?** [Start exploring games now!](https://agilegamifai.com) 🚀
+=======
