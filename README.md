@@ -46,15 +46,6 @@ VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anonymous_key
 ```
 
-**✅ Security Improvement**: API keys are now securely handled server-side! No more exposed API keys in the client bundle. The application uses secure serverless functions to protect your HuggingFace API credentials.
-
-#### For Deployment (Netlify)
-
-Set the following environment variable in your Netlify deployment settings:
-```env
-HF_ACCESS_TOKEN=your_huggingface_access_token
-```
-
 The application will be available at `http://localhost:5173`
 
 ## 📱 Customer Journey Demo
@@ -255,6 +246,13 @@ netlify dev
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
+**🚨 SECURITY GUIDELINES FOR CONTRIBUTORS:**
+- **NEVER commit production API keys** to version control
+- Use demo/test keys with limited quotas for development
+- Test with `.env.local` (git-ignored) for personal API keys
+- Document any new security considerations in SECURITY.md
+- Review the [Security Policy](SECURITY.md) before contributing
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
@@ -278,9 +276,14 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🔒 Privacy & Security
 
+**⚠️ CRITICAL SECURITY LIMITATION: API keys are exposed in client-side builds.**
+
 - No personal data collection without consent
-- Secure API key management
+- **API keys visible in built JavaScript bundle** - see [SECURITY.md](SECURITY.md)
 - Input sanitization and validation
+- **NOT recommended for production without backend security layer**
+
+For production deployments, implement server-side API handling or use demo keys only.
 - HTTPS-only deployment
 
 ## 💖 Support
