@@ -186,16 +186,18 @@ function App() {
   );
 
   const Pagination = () => (
-    <div className="flex justify-center items-center gap-4 mt-6">
+    <nav aria-label="Game pagination" className="flex justify-center items-center gap-4 mt-6">
       <Button
         variant="outline"
         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
         disabled={currentPage === 1}
         className="border-teal-300 text-teal-700 hover:bg-teal-50"
+        aria-label="Go to previous page"
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+        Previous
       </Button>
-      <span className="text-sm text-teal-700">
+      <span className="text-sm text-teal-700" aria-current="page">
         Page {currentPage} of {totalPages}
       </span>
       <Button
@@ -203,24 +205,38 @@ function App() {
         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
         disabled={currentPage === totalPages}
         className="border-teal-300 text-teal-700 hover:bg-teal-50"
+        aria-label="Go to next page"
       >
-        <ChevronRight className="h-4 w-4" />
+        Next
+        <ChevronRight className="h-4 w-4" aria-hidden="true" />
       </Button>
-    </div>
+    </nav>
   );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-purple-50">
+      {/* Skip navigation link for keyboard users */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-teal-600 text-white px-4 py-2 rounded-md z-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
+      
       <Header currentView={currentView} onViewChange={handleViewChange} />
       
-      <main className="container mx-auto px-4 pb-24">
+      <main id="main-content" className="container mx-auto px-4 pb-24">
         {currentView === 'library' && (
           <>
             <GameFilter filters={filters} onFilterChange={setFilters} />
             {isLoading ? (
-              <div className="text-center py-8 text-teal-600">Loading games...</div>
+              <div className="text-center py-8 text-teal-600" role="status" aria-live="polite">
+                Loading games...
+              </div>
             ) : error ? (
-              <div className="text-center py-8 text-red-600">{error}</div>
+              <div className="text-center py-8 text-red-600" role="alert" aria-live="assertive">
+                {error}
+              </div>
             ) : (
               <>
                 <GameGrid 

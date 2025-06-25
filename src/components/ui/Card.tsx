@@ -7,9 +7,9 @@ interface CardProps {
 
 export const Card = ({ children, className = "" }: CardProps) => {
   return (
-    <div className={`bg-white rounded-lg shadow-md overflow-hidden ${className}`}>
+    <article className={`bg-white rounded-lg shadow-md overflow-hidden ${className}`}>
       {children}
-    </div>
+    </article>
   );
 };
 
@@ -33,9 +33,9 @@ interface CardTitleProps {
 
 export const CardTitle = ({ children, className = "" }: CardTitleProps) => {
   return (
-    <h3 className={`text-xl font-semibold text-gray-900 ${className}`}>
+    <h2 className={`text-xl font-semibold text-gray-900 ${className}`}>
       {children}
-    </h3>
+    </h2>
   );
 };
 

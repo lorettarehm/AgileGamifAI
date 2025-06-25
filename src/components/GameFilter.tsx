@@ -82,6 +82,13 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
     onFilterChange({ ...filters, accessibleOnly: !filters.accessibleOnly });
   };
 
+  const handleKeyDown = (key: string, callback: () => void) => (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      callback();
+    }
+  };
+
   const resetFilters = () => {
     onFilterChange({
       methodology: [],
@@ -99,14 +106,20 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
     <div className="bg-white rounded-lg shadow-md p-4 mb-6 border border-teal-100">
       <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
         <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-teal-400 h-4 w-4" />
+          <label htmlFor="search-games" className="sr-only">Search games</label>
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-teal-400 h-4 w-4" aria-hidden="true" />
           <input
+            id="search-games"
             type="text"
             placeholder="Search games..."
             className="w-full pl-10 pr-4 py-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             value={filters.searchTerm}
             onChange={(e) => updateSearchTerm(e.target.value)}
+            aria-describedby="search-description"
           />
+          <div id="search-description" className="sr-only">
+            Search through game titles and descriptions
+          </div>
         </div>
         
         <Button 
@@ -129,10 +142,13 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 <Badge
                   key={methodology}
                   variant={filters.methodology.includes(methodology) ? "default" : "outline"}
-                  className={`cursor-pointer transition-colors ${
+                  className={`transition-colors ${
                     filters.methodology.includes(methodology) ? '' : 'hover:bg-teal-100'
                   }`}
                   onClick={() => toggleMethodology(methodology)}
+                  onKeyDown={handleKeyDown('methodology', () => toggleMethodology(methodology))}
+                  aria-label={`Filter by ${methodology} methodology`}
+                  aria-pressed={filters.methodology.includes(methodology)}
                 >
                   {methodology}
                 </Badge>
@@ -147,10 +163,13 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 <Badge
                   key={purpose}
                   variant={filters.purpose.includes(purpose) ? "secondary" : "outline"}
-                  className={`cursor-pointer transition-colors ${
+                  className={`transition-colors ${
                     filters.purpose.includes(purpose) ? '' : 'hover:bg-purple-100'
                   }`}
                   onClick={() => togglePurpose(purpose)}
+                  onKeyDown={handleKeyDown('purpose', () => togglePurpose(purpose))}
+                  aria-label={`Filter by ${purpose} purpose`}
+                  aria-pressed={filters.purpose.includes(purpose)}
                 >
                   {purpose}
                 </Badge>
@@ -165,10 +184,13 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 <Badge
                   key={level}
                   variant={filters.knowledgeLevel.includes(level) ? "purple" : "outline"}
-                  className={`cursor-pointer transition-colors ${
+                  className={`transition-colors ${
                     filters.knowledgeLevel.includes(level) ? '' : 'hover:bg-purple-100'
                   }`}
                   onClick={() => toggleKnowledgeLevel(level)}
+                  onKeyDown={handleKeyDown('knowledgeLevel', () => toggleKnowledgeLevel(level))}
+                  aria-label={`Filter by ${level} knowledge level`}
+                  aria-pressed={filters.knowledgeLevel.includes(level)}
                 >
                   {level}
                 </Badge>
@@ -178,10 +200,11 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h3 className="font-medium text-teal-700 mb-2">
+              <label htmlFor="participants-range" className="font-medium text-teal-700 mb-2 block">
                 Team Size: {filters.participants > 0 ? `${filters.participants}+ participants` : 'Any'}
-              </h3>
+              </label>
               <input
+                id="participants-range"
                 type="range"
                 min="0"
                 max="20"
@@ -189,14 +212,16 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 value={filters.participants}
                 onChange={(e) => updateParticipants(Number(e.target.value))}
                 className="w-full h-2 bg-teal-200 rounded-lg appearance-none cursor-pointer slider-thumb-teal"
+                aria-label="Minimum number of participants"
               />
             </div>
 
             <div>
-              <h3 className="font-medium text-teal-700 mb-2">
+              <label htmlFor="duration-range" className="font-medium text-teal-700 mb-2 block">
                 Max Duration: {filters.maxDuration} minutes
-              </h3>
+              </label>
               <input
+                id="duration-range"
                 type="range"
                 min="15"
                 max="120"
@@ -204,6 +229,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 value={filters.maxDuration}
                 onChange={(e) => updateMaxDuration(Number(e.target.value))}
                 className="w-full h-2 bg-teal-200 rounded-lg appearance-none cursor-pointer slider-thumb-teal"
+                aria-label="Maximum duration in minutes"
               />
             </div>
           </div>
@@ -215,10 +241,13 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 <Badge
                   key={complexity}
                   variant={filters.complexity.includes(complexity) ? "purple" : "outline"}
-                  className={`cursor-pointer transition-colors ${
+                  className={`transition-colors ${
                     filters.complexity.includes(complexity) ? '' : 'hover:bg-purple-100'
                   }`}
                   onClick={() => toggleComplexity(complexity)}
+                  onKeyDown={handleKeyDown('complexity', () => toggleComplexity(complexity))}
+                  aria-label={`Filter by ${complexity} complexity`}
+                  aria-pressed={filters.complexity.includes(complexity)}
                 >
                   {complexity}
                 </Badge>
@@ -229,16 +258,21 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
           <div>
             <label className="flex items-center space-x-2 cursor-pointer">
               <input
+                id="accessibility-filter"
                 type="checkbox"
                 checked={filters.accessibleOnly}
                 onChange={toggleAccessibleOnly}
                 className="h-4 w-4 text-teal-600 rounded border-teal-300 focus:ring-teal-500"
+                aria-describedby="accessibility-filter-description"
               />
               <span className="text-sm font-medium text-teal-700 flex items-center">
-                <Accessibility className="h-4 w-4 mr-1" />
+                <Accessibility className="h-4 w-4 mr-1" aria-hidden="true" />
                 Show only disability-friendly games
               </span>
             </label>
+            <div id="accessibility-filter-description" className="sr-only">
+              Filter to show only games that have been designed to be accessible for people with disabilities
+            </div>
           </div>
 
           <div className="flex justify-end">
