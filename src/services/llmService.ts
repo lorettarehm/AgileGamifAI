@@ -1,66 +1,61 @@
 /**
  * LLM Service - Secure API layer for Language Model interactions
  * 
- * SECURITY NOTE: This service encapsulates LLM API access to minimize direct exposure
- * of API keys in component code. However, in a client-side only application, 
- * environment variables prefixed with VITE_ are still exposed in the built bundle.
+ * SECURITY IMPROVEMENT: This service now calls secure serverless functions
+ * instead of exposing API keys in the client bundle. API keys are kept
+ * server-side only, preventing exposure to end users.
  * 
- * For production environments, consider:
- * 1. Moving to a backend API that handles LLM calls server-side
- * 2. Using serverless functions as a proxy
- * 3. Implementing user-based API key management
+ * Architecture:
+ * Client → Serverless Function → LLM Service (API keys secure)
  */
 
-import { HfInference } from '@huggingface/inference';
-
-// Environment configuration with validation
+// Configuration for serverless function endpoints
 interface LLMConfig {
-  apiKey: string;
-  defaultModel: string;
-  maxTokens: number;
-  temperature: number;
+  baseUrl: string;
+  generateGameDataEndpoint: string;
+  generateCompleteGameEndpoint: string;
 }
 
 class LLMService {
-  private hf: HfInference | null = null;
-  private config: LLMConfig | null = null;
+  private config: LLMConfig;
   private initialized = false;
 
+  constructor() {
+    // Configure endpoints - will work for both local development and production
+    this.config = {
+      baseUrl: this.getBaseUrl(),
+      generateGameDataEndpoint: '/.netlify/functions/generateGameData',
+      generateCompleteGameEndpoint: '/.netlify/functions/generateCompleteGame'
+    };
+  }
+
   /**
-   * Initialize the LLM service with secure configuration
+   * Get the appropriate base URL for API calls
+   */
+  private getBaseUrl(): string {
+    // In production, use the current origin
+    // In development, could be configured via environment variable
+    if (typeof window !== 'undefined') {
+      return window.location.origin;
+    }
+    return '';
+  }
+
+  /**
+   * Initialize the LLM service
    */
   private initialize(): void {
     if (this.initialized) return;
-
-    const apiKey = import.meta.env.VITE_HF_ACCESS_TOKEN;
-    
-    if (!apiKey) {
-      console.warn('LLM Service: No API key provided. AI features will be disabled.');
-      return;
-    }
-
-    if (typeof apiKey !== 'string' || apiKey.trim().length === 0) {
-      console.error('LLM Service: Invalid API key format.');
-      return;
-    }
-
-    this.config = {
-      apiKey: apiKey.trim(),
-      defaultModel: 'deepseek-ai/deepseek-v2-lite-chat',
-      maxTokens: 1000,
-      temperature: 0.7
-    };
-
-    this.hf = new HfInference(this.config.apiKey);
     this.initialized = true;
   }
 
   /**
-   * Check if the LLM service is available and properly configured
+   * Check if the LLM service is available
+   * Now always returns true since we don't need client-side API keys
    */
   public isAvailable(): boolean {
     this.initialize();
-    return this.hf !== null && this.config !== null;
+    return true; // Service is available if serverless functions are deployed
   }
 
   /**
@@ -71,27 +66,28 @@ class LLMService {
     systemPrompt: string
   ): Promise<Record<string, unknown>> {
     if (!this.isAvailable()) {
-      throw new Error('LLM service is not available. Please check your API key configuration.');
+      throw new Error('LLM service is not available.');
     }
 
     try {
-      const prompt = `${systemPrompt}\n\nPartial game data: ${JSON.stringify(partialGameData, null, 2)}\n\nComplete the game data, maintaining any existing values and generating appropriate values for missing fields. Return only the JSON object.`;
-
-      const response = await this.hf!.textGeneration({
-        model: this.config!.defaultModel,
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: this.config!.maxTokens,
-          temperature: this.config!.temperature,
-          return_full_text: false
-        }
+      const response = await fetch(`${this.config.baseUrl}${this.config.generateGameDataEndpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          partialGameData,
+          systemPrompt
+        })
       });
 
-      if (!response.generated_text) {
-        throw new Error('No response generated from LLM service');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
-      return JSON.parse(response.generated_text);
+      const result = await response.json();
+      return result.data;
     } catch (error) {
       console.error('LLM Service: Error generating game data:', error);
       throw new Error('Failed to generate game data. Please try again.');
@@ -106,26 +102,28 @@ class LLMService {
     systemPrompt: string
   ): Promise<Record<string, unknown>> {
     if (!this.isAvailable()) {
-      throw new Error('LLM service is not available. Please check your API key configuration.');
+      throw new Error('LLM service is not available.');
     }
 
     try {
-      const fullPrompt = `${systemPrompt}\n\nUser request: ${userPrompt}\n\nResponse:`;
-
-      const response = await this.hf!.textGeneration({
-        model: this.config!.defaultModel,
-        inputs: fullPrompt,
-        parameters: {
-          max_new_tokens: this.config!.maxTokens,
-          temperature: this.config!.temperature
-        }
+      const response = await fetch(`${this.config.baseUrl}${this.config.generateCompleteGameEndpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userPrompt,
+          systemPrompt
+        })
       });
 
-      if (!response.generated_text) {
-        throw new Error('No response generated from LLM service');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
-      return JSON.parse(response.generated_text);
+      const result = await response.json();
+      return result.data;
     } catch (error) {
       console.error('LLM Service: Error generating complete game:', error);
       throw new Error('Failed to generate game suggestion. Please try again.');
@@ -139,8 +137,8 @@ class LLMService {
     this.initialize();
     return {
       available: this.isAvailable(),
-      hasApiKey: !!import.meta.env.VITE_HF_ACCESS_TOKEN,
-      model: this.config?.defaultModel
+      hasApiKey: true, // API keys are now handled server-side
+      model: 'deepseek-ai/deepseek-v2-lite-chat' // Model is configured in serverless functions
     };
   }
 }

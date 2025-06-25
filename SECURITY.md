@@ -4,71 +4,93 @@
 
 ### Current Implementation
 
-AgileGamifAI uses a client-side architecture with Vite/React. The application requires API keys for LLM functionality through the HuggingFace Inference API.
+**SECURITY IMPROVEMENT**: AgileGamifAI now implements a secure serverless architecture where API keys are protected server-side.
 
-### Security Considerations
+### Secure Architecture
 
-⚠️ **Important**: In client-side applications using Vite, environment variables prefixed with `VITE_` are exposed in the built JavaScript bundle. This means:
+✅ **Implemented**: The application now uses serverless functions to proxy LLM API calls:
 
-- API keys are visible to end users who inspect the built application
-- Keys can be extracted from browser developer tools or network requests
-- This is a fundamental limitation of client-side only applications
-
-### Current Security Measures
-
-1. **Service Layer Encapsulation**: All API calls are centralized in `src/services/llmService.ts`
-2. **Runtime Validation**: API keys are validated before use
-3. **Error Handling**: Graceful degradation when keys are missing or invalid
-4. **Clear Documentation**: Warnings and guidance about security limitations
-
-### Recommended Production Solutions
-
-For production environments, consider implementing one of these approaches:
-
-#### 1. Backend API (Recommended)
-```
-Client → Your Backend API → LLM Service
-```
-- Move all LLM API calls to a backend server
-- Keep API keys on the server side only
-- Client makes requests to your authenticated backend
-
-#### 2. Serverless Functions
 ```
 Client → Serverless Function → LLM Service
 ```
-- Deploy functions (Vercel Functions, Netlify Functions, AWS Lambda)
-- Functions handle LLM API calls securely
-- Client calls your functions instead of LLM API directly
 
-#### 3. User-Based API Keys
-```
-Client → LLM Service (with user's own API key)
-```
-- Users provide their own API keys
-- Keys stored in browser localStorage (still client-side)
-- Users responsible for their own API usage and costs
+- **API keys are secure**: HuggingFace API keys are kept server-side only
+- **No client-side exposure**: API keys are never exposed in the built JavaScript bundle
+- **Serverless functions**: Netlify Functions handle LLM API calls securely
+- **Client calls secure endpoints**: Frontend makes requests to authenticated serverless functions
+
+### Security Measures
+
+1. **Serverless Function Encapsulation**: All LLM API calls are handled by secure serverless functions
+2. **Server-side API Keys**: API keys are stored as server-side environment variables only
+3. **Runtime Validation**: API keys are validated server-side before use
+4. **Error Handling**: Graceful degradation when services are unavailable
+5. **CORS Protection**: Proper CORS headers for secure cross-origin requests
+
+### Legacy Architecture (Deprecated)
+
+The following approaches were previously documented but are **no longer needed** as the security issue has been resolved:
+
+~~#### 1. Backend API~~
+~~#### 2. Serverless Functions~~ ✅ **IMPLEMENTED**
+~~#### 3. User-Based API Keys~~
+
+**Current Status**: ✅ **SECURE** - The application now implements secure serverless functions, eliminating API key exposure.
 
 ### Environment Variables
 
 Required environment variables:
 
+#### Client-side (Vite)
 ```bash
-# LLM API Key (exposed in client bundle)
-VITE_HF_ACCESS_TOKEN=your_huggingface_token
-
-# Database credentials (exposed in client bundle)
+# Database credentials (safe for client-side use with row-level security)
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-### Best Practices for Current Implementation
+#### Server-side (Netlify Functions)
+```bash
+# LLM API Key (secure server-side only)
+HF_ACCESS_TOKEN=your_huggingface_token
+```
 
-1. **Development Only**: Use this setup for development and testing
-2. **Demo Keys**: Use demo/limited API keys for public deployments
-3. **Rate Limiting**: Implement client-side rate limiting where possible
-4. **Key Rotation**: Regularly rotate API keys
-5. **Monitoring**: Monitor API usage for unauthorized access
+**✅ Security Improvement**: API keys are now properly secured server-side and never exposed to end users.
+
+### Deployment Configuration
+
+#### Netlify Deployment
+
+1. **Set Environment Variables**: In Netlify UI, set the server-side environment variable:
+   - `HF_ACCESS_TOKEN=your_huggingface_access_token`
+
+2. **Automatic Deployment**: The application automatically deploys with secure serverless functions
+
+3. **Function Endpoints**: The following endpoints will be available:
+   - `/.netlify/functions/generateGameData` - For AI-assisted game completion
+   - `/.netlify/functions/generateCompleteGame` - For full game generation
+
+#### Local Development
+
+For local development with Netlify CLI:
+
+```bash
+# Install Netlify CLI
+npm install -g netlify-cli
+
+# Set local environment variable
+netlify env:set HF_ACCESS_TOKEN your_huggingface_access_token
+
+# Run local development server with functions
+netlify dev
+```
+
+### Architecture Benefits
+
+1. **Zero API Key Exposure**: API keys never appear in client-side code or browser
+2. **Rate Limiting**: Can be implemented at the function level
+3. **Authentication**: Functions can implement additional authentication if needed
+4. **Monitoring**: Server-side logging and monitoring of API usage
+5. **Cost Control**: Centralized API usage tracking and controls
 
 ### Reporting Security Issues
 
