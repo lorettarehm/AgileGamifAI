@@ -47,7 +47,27 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anonymous_key
 VITE_HF_ACCESS_TOKEN=your_huggingface_access_token
 ```
 
-**⚠️ Security Note**: This application requires an API key for AI features. In client-side applications like this, API keys in environment variables prefixed with `VITE_` are exposed in the built bundle. For production use, consider implementing a backend API or serverless functions to securely handle LLM calls.
+## 🚨 IMPORTANT SECURITY WARNING
+
+**🔐 API Keys Are Exposed in Client-Side Builds**
+
+This application uses a client-side architecture that **exposes API keys in the built JavaScript bundle**. Anyone can:
+- Extract API keys from browser developer tools
+- View keys in the built application source
+- Access keys through network traffic inspection
+
+### For Development & Testing Only
+- ✅ Use for local development and testing
+- ✅ Use demo/limited API keys for public deployments
+- ❌ **NEVER use production API keys in client builds**
+- ❌ **NEVER use high-limit or billing-enabled keys**
+
+### Production Deployment Options
+1. **Backend API** (Recommended) - Move API calls to your server
+2. **Serverless Functions** - Use Vercel/Netlify/AWS Lambda as proxy
+3. **User-Provided Keys** - Let users input their own API keys
+
+📖 **See [SECURITY.md](SECURITY.md) for complete security guidance and mitigation strategies.**
 
 The application will be available at `http://localhost:5173`
 
@@ -212,6 +232,13 @@ npm run type-check   # Run TypeScript compiler
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
+**🚨 SECURITY GUIDELINES FOR CONTRIBUTORS:**
+- **NEVER commit production API keys** to version control
+- Use demo/test keys with limited quotas for development
+- Test with `.env.local` (git-ignored) for personal API keys
+- Document any new security considerations in SECURITY.md
+- Review the [Security Policy](SECURITY.md) before contributing
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
@@ -235,9 +262,14 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🔒 Privacy & Security
 
+**⚠️ CRITICAL SECURITY LIMITATION: API keys are exposed in client-side builds.**
+
 - No personal data collection without consent
-- Secure API key management
+- **API keys visible in built JavaScript bundle** - see [SECURITY.md](SECURITY.md)
 - Input sanitization and validation
+- **NOT recommended for production without backend security layer**
+
+For production deployments, implement server-side API handling or use demo keys only.
 - HTTPS-only deployment
 
 ## 💖 Support
