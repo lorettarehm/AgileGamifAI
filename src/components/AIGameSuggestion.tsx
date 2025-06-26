@@ -31,7 +31,7 @@ const AIGameSuggestion: React.FC<AIGameSuggestionProps> = ({ onGameGenerated }) 
         {
           "title": "Game Title",
           "description": "Brief description",
-          "methodology": ["Choose from: Scrum, Kanban, XP, Lean, LeSS, Nexus, General"],
+          "framework": ["Choose from: Scrum, Kanban, XP, Lean, LeSS, Nexus, General"],
           "purpose": ["Choose from: Team Building, Problem Solving, Retrospective, Estimation, Planning, Prioritization, Process Improvement"],
           "minParticipants": number,
           "maxParticipants": number,

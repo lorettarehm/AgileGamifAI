@@ -20,7 +20,7 @@ function App() {
   const [games, setGames] = useState<Game[]>([]);
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [filters, setFilters] = useState<GameFilters>({
-    methodology: [],
+    framework: [],
     purpose: [],
     participants: 0,
     maxDuration: 120,
@@ -94,7 +94,7 @@ function App() {
       return false;
     }
     
-    if (filters.methodology.length > 0 && !game.methodology.some(m => filters.methodology.includes(m))) {
+    if (filters.framework.length > 0 && !game.framework.some(m => filters.framework.includes(m))) {
       return false;
     }
     

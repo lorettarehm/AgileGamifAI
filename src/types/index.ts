@@ -1,4 +1,4 @@
-export type AgileMethodology = 
+export type AgileFramework = 
   | 'Scrum' 
   | 'Kanban' 
   | 'XP' 
@@ -28,7 +28,7 @@ export interface Game {
   id: string;
   title: string;
   description: string;
-  methodology: AgileMethodology[];
+  framework: AgileFramework[];
   purpose: GamePurpose[];
   minParticipants: number;
   maxParticipants: number;
@@ -45,7 +45,7 @@ export interface Game {
 }
 
 export interface GameFilters {
-  methodology: AgileMethodology[];
+  framework: AgileFramework[];
   purpose: GamePurpose[];
   participants: number;
   maxDuration: number;
