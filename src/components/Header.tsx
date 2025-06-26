@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
             <img 
               src="/1749172667026.png" 
               alt="Agile GamifAI Logo" 
-              className="h-12 w-12 mr-3 rounded-lg shadow-md"
+              className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 mr-3 rounded-lg shadow-md"
             />
             {/* Main application title */}
             <h1 className="text-xl font-bold text-white">Agile Games</h1>
