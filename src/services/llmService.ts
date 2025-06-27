@@ -9,27 +9,29 @@
  * Client → Serverless Function → LLM Service (API keys secure)
  */
 
-import { HfInference } from '@huggingface/inference';
-
 // Helper function to get environment variables in both Vite and test environments
 function getEnvVar(name: string): string | undefined {
-  // In test environment, use process.env
+  // In any Node.js environment (including Jest), use process.env
   if (typeof process !== 'undefined' && process.env) {
     return process.env[name];
   }
   
-  // In Vite environment, check if import.meta is available
-  if (typeof window !== 'undefined' && (window as unknown as { importMeta?: { env: Record<string, string> } }).importMeta?.env) {
-    return (window as unknown as { importMeta: { env: Record<string, string> } }).importMeta.env[name];
+  // In browser environments, try various approaches
+  if (typeof window !== 'undefined') {
+    // Check if import.meta is available on the window object (some build systems expose it)
+    const globalObj = window as unknown as { importMeta?: { env: Record<string, string> } };
+    if (globalObj.importMeta?.env) {
+      return globalObj.importMeta.env[name];
+    }
+    
+    // Check if environment variables are exposed on window (some build systems do this)
+    const windowObj = window as unknown as { env?: Record<string, string> };
+    if (windowObj.env) {
+      return windowObj.env[name];
+    }
   }
   
-  // Fallback: try to access import.meta safely
-  try {
-    // @ts-expect-error - This will work in Vite but not in Jest
-    return import.meta.env[name];
-  } catch {
-    return undefined;
-  }
+  return undefined;
 }
 
 // Environment configuration with validation
@@ -90,15 +92,13 @@ class LLMService {
 
   constructor() {
     // Configure rate limits based on environment
-    const isDevelopment = process.env.NODE_ENV === 'development' || 
+    const isDevelopment = (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') || 
                          getEnvVar('DEV') === 'true';
     const maxRequests = isDevelopment ? 50 : 20; // More lenient for development
     const timeWindow = 1; // 1 minute window
     
     this.rateLimiter = new RateLimiter(maxRequests, timeWindow);
-  }
-
-  constructor() {
+    
     // Configure endpoints - will work for both local development and production
     this.config = {
       baseUrl: this.getBaseUrl(),
@@ -110,21 +110,13 @@ class LLMService {
   /**
    * Get the appropriate base URL for API calls
    */
-  private initialize(): void {
-    if (this.initialized) return;
-
-    const apiKey = getEnvVar('VITE_HF_ACCESS_TOKEN');
-    
-    if (!apiKey) {
-      console.warn('LLM Service: No API key provided. AI features will be disabled.');
-      return;
+  private getBaseUrl(): string {
+    // In development, use localhost
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      return 'http://localhost:8888';
     }
-
-    if (typeof apiKey !== 'string' || apiKey.trim().length === 0) {
-      console.error('LLM Service: Invalid API key format.');
-      return;
-    }
-    return '';
+    // In production, use the current origin
+    return typeof window !== 'undefined' ? window.location.origin : '';
   }
 
   /**
@@ -157,6 +149,7 @@ class LLMService {
       resetTime: this.rateLimiter.getResetTime()
     };
   }
+
   /**
    * Check if the LLM service is available and properly configured
    */
@@ -194,8 +187,8 @@ class LLMService {
       // Record successful request for rate limiting
       this.rateLimiter.recordRequest();
 
-      if (!response.generated_text) {
-        throw new Error('No response generated from LLM service');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
@@ -239,8 +232,8 @@ class LLMService {
       // Record successful request for rate limiting
       this.rateLimiter.recordRequest();
 
-      if (!response.generated_text) {
-        throw new Error('No response generated from LLM service');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
@@ -261,7 +254,7 @@ class LLMService {
   public getStatus(): { 
     available: boolean; 
     hasApiKey: boolean; 
-    model?: string;
+    baseUrl: string;
     rateLimit: { remaining: number; resetTime: number };
   } {
     this.initialize();
@@ -269,7 +262,7 @@ class LLMService {
     return {
       available: this.isAvailable(),
       hasApiKey: !!getEnvVar('VITE_HF_ACCESS_TOKEN'),
-      model: this.config?.defaultModel,
+      baseUrl: this.config.baseUrl,
       rateLimit: this.getRateLimitStatus()
     };
   }

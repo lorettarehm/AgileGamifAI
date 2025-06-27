@@ -23,8 +23,12 @@ describe('LLMService', () => {
       const status = llmService.getStatus();
       expect(status).toEqual({
         available: true,
-        hasApiKey: true, // API keys handled server-side
-        model: 'deepseek-ai/deepseek-v2-lite-chat'
+        hasApiKey: false, // No API key needed client-side in serverless architecture
+        baseUrl: 'http://localhost:8888',
+        rateLimit: {
+          remaining: expect.any(Number),
+          resetTime: expect.any(Number)
+        }
       });
     });
   });
