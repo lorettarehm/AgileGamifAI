@@ -10,7 +10,7 @@ interface GameDetailProps {
   onStartGame: (id: string) => void;
 }
 
-const methodologyColorMap: Record<string, string> = {
+const frameworkColorMap: Record<string, string> = {
   Scrum: 'default', // teal
   Kanban: 'secondary', // purple
   XP: 'purple',
@@ -52,8 +52,8 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
         <p className="text-white/90 mb-4">{game.description}</p>
         
         <div className="flex flex-wrap gap-2">
-          {game.methodology.map((method) => (
-            <Badge key={method} variant={methodologyColorMap[method] || 'default'} className="bg-white/20 text-white border-white/30">
+          {game.framework.map((method) => (
+            <Badge key={method} variant={frameworkColorMap[method] || 'default'} className="bg-white/20 text-white border-white/30">
               {method}
             </Badge>
           ))}

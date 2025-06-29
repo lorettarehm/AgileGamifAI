@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Plus, Minus, Loader2, Coffee } from 'lucide-react';
 import { Button } from './ui/Button';
-import { Game, AgileMethodology, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
+import { Game, AgileFramework, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
 import { Badge } from './ui/Badge';
 import { llmService } from '../services/llmService';
 
@@ -13,7 +13,7 @@ interface GameCreateProps {
 const DEFAULT_GAME: Omit<Game, 'id'> = {
   title: '',
   description: '',
-  methodology: [],
+  framework: [],
   purpose: [],
   minParticipants: 3,
   maxParticipants: 10,
@@ -34,7 +34,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
   const [errors, setErrors] = useState<Partial<Record<keyof Game, string>>>({});
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const methodologies: AgileMethodology[] = ['Scrum', 'Kanban', 'XP', 'Lean', 'LeSS', 'Nexus', 'General'];
+  const frameworks: AgileFramework[] = ['Scrum', 'Kanban', 'XP', 'Lean', 'LeSS', 'Nexus', 'General'];
   const purposes: GamePurpose[] = [
     'Team Building', 
     'Problem Solving', 
@@ -70,7 +70,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
       {
         "title": "string",
         "description": "string",
-        "methodology": ["Choose from: Scrum, Kanban, XP, Lean, LeSS, Nexus, General"],
+        "framework": ["Choose from: Scrum, Kanban, XP, Lean, LeSS, Nexus, General"],
         "purpose": ["Choose from: Team Building, Problem Solving, Retrospective, Estimation, Planning, Prioritization, Process Improvement"],
         "minParticipants": number,
         "maxParticipants": number,
@@ -106,15 +106,15 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
     }
   };
 
-  const toggleMethodology = (methodology: AgileMethodology) => {
-    const current = game.methodology;
-    const updated = current.includes(methodology)
-      ? current.filter(m => m !== methodology)
-      : [...current, methodology];
+  const toggleFramework = (framework: AgileFramework) => {
+    const current = game.framework;
+    const updated = current.includes(framework)
+      ? current.filter(m => m !== framework)
+      : [...current, framework];
     
-    setGame({ ...game, methodology: updated });
-    if (errors.methodology) {
-      setErrors({ ...errors, methodology: undefined });
+    setGame({ ...game, framework: updated });
+    if (errors.framework) {
+      setErrors({ ...errors, framework: undefined });
     }
   };
 
@@ -175,8 +175,8 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
       newErrors.description = 'Description is required';
     }
     
-    if (game.methodology.length === 0) {
-      newErrors.methodology = 'At least one methodology is required';
+    if (game.framework.length === 0) {
+      newErrors.framework = 'At least one framework is required';
     }
     
     if (game.purpose.length === 0) {
@@ -323,19 +323,19 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-teal-700 mb-1">
-              Methodology {errors.methodology && <span className="text-red-500">(Select at least one)</span>}
+              Framework {errors.framework && <span className="text-red-500">(Select at least one)</span>}
             </label>
             <div className="flex flex-wrap gap-2">
-              {methodologies.map((methodology) => (
+              {frameworks.map((framework) => (
                 <Badge
-                  key={methodology}
-                  variant={game.methodology.includes(methodology) ? "default" : "outline"}
+                  key={framework}
+                  variant={game.framework.includes(framework) ? "default" : "outline"}
                   className={`cursor-pointer transition-colors ${
-                    game.methodology.includes(methodology) ? '' : 'hover:bg-teal-100'
+                    game.framework.includes(framework) ? '' : 'hover:bg-teal-100'
                   }`}
-                  onClick={() => toggleMethodology(methodology)}
+                  onClick={() => toggleFramework(framework)}
                 >
-                  {methodology}
+                  {framework}
                 </Badge>
               ))}
             </div>

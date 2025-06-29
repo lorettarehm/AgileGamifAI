@@ -5,7 +5,7 @@ export const createMockGame = (overrides: Partial<Game> = {}): Game => ({
   id: '1',
   title: 'Test Game',
   description: 'A test game for testing',
-  methodology: ['Scrum'],
+  framework: ['Scrum'],
   purpose: ['Team Building'],
   minParticipants: 3,
   maxParticipants: 10,
@@ -23,7 +23,7 @@ export const createMockGame = (overrides: Partial<Game> = {}): Game => ({
 });
 
 export const createMockFilters = (overrides: Partial<GameFilters> = {}): GameFilters => ({
-  methodology: [],
+  framework: [],
   purpose: [],
   participants: 0,
   maxDuration: 120,
@@ -38,7 +38,7 @@ export const mockGames: Game[] = [
   createMockGame({
     id: '1',
     title: 'Scrum Team Building',
-    methodology: ['Scrum'],
+    framework: ['Scrum'],
     purpose: ['Team Building'],
     complexity: 'Easy',
     duration: 30,
@@ -48,7 +48,7 @@ export const mockGames: Game[] = [
   createMockGame({
     id: '2', 
     title: 'Kanban Retrospective',
-    methodology: ['Kanban'],
+    framework: ['Kanban'],
     purpose: ['Retrospective'],
     complexity: 'Medium',
     duration: 45,
@@ -58,7 +58,7 @@ export const mockGames: Game[] = [
   createMockGame({
     id: '3',
     title: 'Estimation Planning Poker',
-    methodology: ['Scrum', 'General'],
+    framework: ['Scrum', 'General'],
     purpose: ['Estimation', 'Planning'],
     complexity: 'Hard',
     duration: 60,
