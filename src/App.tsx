@@ -171,11 +171,11 @@ function App() {
   };
 
   const Footer = () => (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-teal-200 p-4">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-teal-200 p-3 sm:p-4">
       <div className="container mx-auto flex justify-center">
         <Button
           variant="outline"
-          className="flex items-center gap-2 border-teal-300 text-teal-700 hover:bg-teal-50"
+          className="flex items-center gap-2 text-xs sm:text-sm border-teal-300 text-teal-700 hover:bg-teal-50"
           onClick={() => window.open('https://coff.ee/AgileGamifAI', '_blank')}
         >
           <BookOpenText className="h-4 w-4" />
@@ -186,25 +186,27 @@ function App() {
   );
 
   const Pagination = () => (
-    <div className="flex justify-center items-center gap-4 mt-6">
+    <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-6">
       <Button
         variant="outline"
         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
         disabled={currentPage === 1}
-        className="border-teal-300 text-teal-700 hover:bg-teal-50"
+        className="w-full sm:w-auto border-teal-300 text-teal-700 hover:bg-teal-50 text-sm"
       >
         <ChevronLeft className="h-4 w-4" />
+        <span className="sm:hidden ml-2">Previous</span>
       </Button>
-      <span className="text-sm text-teal-700">
+      <span className="text-sm text-teal-700 order-first sm:order-none">
         Page {currentPage} of {totalPages}
       </span>
       <Button
         variant="outline"
         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
         disabled={currentPage === totalPages}
-        className="border-teal-300 text-teal-700 hover:bg-teal-50"
+        className="w-full sm:w-auto border-teal-300 text-teal-700 hover:bg-teal-50 text-sm"
       >
         <ChevronRight className="h-4 w-4" />
+        <span className="sm:hidden ml-2">Next</span>
       </Button>
     </div>
   );
@@ -213,7 +215,7 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-purple-50">
       <Header currentView={currentView} onViewChange={handleViewChange} />
       
-      <main className="container mx-auto px-4 pb-24">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         {currentView === 'library' && (
           <>
             <GameFilter filters={filters} onFilterChange={setFilters} />
