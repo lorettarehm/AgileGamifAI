@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Minus, Loader2, Coffee } from 'lucide-react';
+import { ArrowLeft, Plus, Minus, Loader2 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Game, AgileFramework, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
 import { Badge } from './ui/Badge';
@@ -406,7 +406,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               step="5"
               value={game.duration}
               onChange={(e) => setGame({ ...game, duration: parseInt(e.target.value) })}
-              className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              className="w-full p-2 sm:p-3 text-sm sm:text-base border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             />
           </div>
         </div>
@@ -433,7 +433,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
                 type="text"
                 value={outcome}
                 onChange={(e) => updateLearningOutcome(index, e.target.value)}
-                className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full p-2 sm:p-3 text-sm sm:text-base border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 placeholder="e.g., Understand the importance of team collaboration"
               />
               <Button
@@ -475,7 +475,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
                 type="text"
                 value={material}
                 onChange={(e) => updateMaterial(index, e.target.value)}
-                className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full p-2 sm:p-3 text-sm sm:text-base border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 placeholder={`Material ${index + 1}`}
               />
               <Button
@@ -502,7 +502,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               setGame({ ...game, instructions: e.target.value });
               if (errors.instructions) setErrors({ ...errors, instructions: undefined });
             }}
-            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.instructions ? 'border-red-500' : 'border-teal-300'}`}
+            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.instructions ? 'border-red-500' : 'border-teal-300'}`}
             rows={5}
             placeholder="Step-by-step instructions for running the game"
           />
@@ -516,7 +516,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
           <textarea
             value={game.facilitationTips}
             onChange={(e) => setGame({ ...game, facilitationTips: e.target.value })}
-            className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            className="w-full p-2 sm:p-3 text-sm sm:text-base border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             rows={3}
             placeholder="Helpful tips for facilitating the game effectively"
           />
@@ -551,7 +551,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
                     setErrors({ ...errors, accessibilityNotes: undefined });
                   }
                 }}
-                className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${
+                className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${
                   errors.accessibilityNotes ? 'border-red-500' : 'border-teal-300'
                 }`}
                 rows={3}
@@ -564,28 +564,15 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
           )}
         </div>
         
-        <div className="flex justify-end space-x-4">
-          <Button type="button" variant="outline" onClick={onBack}>
+        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
+          <Button type="button" variant="outline" onClick={onBack} className="w-full sm:w-auto text-sm sm:text-base">
             Cancel
           </Button>
-          <Button type="submit" className="bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600">
+          <Button type="submit" className="w-full sm:w-auto text-sm sm:text-base bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600">
             Save Game
           </Button>
         </div>
       </form>
-
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-teal-200 p-4">
-        <div className="container mx-auto flex justify-center">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 border-teal-300 text-teal-700 hover:bg-teal-50"
-            onClick={() => window.open('https://coff.ee/AgileGamifAI', '_blank')}
-          >
-            <Coffee className="h-4 w-4" />
-            Buy me a ☕️
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };
