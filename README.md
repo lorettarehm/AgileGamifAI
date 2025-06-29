@@ -10,6 +10,8 @@
 
 AgileGamifAI is a comprehensive platform that revolutionizes how Agile teams learn, collaborate, and improve through interactive games and activities. Combining AI-powered game generation with human-tested frameworks, this platform serves as your ultimate toolkit for enhancing team dynamics, learning outcomes, and Agile practices.
 
+https://lorettarehm.github.io/AgileGamifAI/
+
 ## 🌟 Key Features
 
 ### 🎮 **Comprehensive Game Library**
