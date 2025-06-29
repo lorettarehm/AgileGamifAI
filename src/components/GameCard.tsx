@@ -33,11 +33,11 @@ const GameCard: React.FC<GameCardProps> = ({ game, onToggleFavorite, onViewDetai
     <Card className="h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:shadow-teal-100/50 border border-teal-100">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-teal-800">{game.title}</CardTitle>
+          <CardTitle className="text-lg sm:text-xl text-teal-800 leading-tight">{game.title}</CardTitle>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-8 w-8 rounded-full hover:bg-purple-100" 
+            className="h-8 w-8 rounded-full hover:bg-purple-100 flex-shrink-0 ml-2" 
             onClick={() => onToggleFavorite(game.id)}
             aria-label={game.isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
@@ -46,7 +46,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onToggleFavorite, onViewDetai
             />
           </Button>
         </div>
-        <CardDescription className="text-teal-600">{game.description}</CardDescription>
+        <CardDescription className="text-sm sm:text-base text-teal-600 leading-relaxed">{game.description}</CardDescription>
       </CardHeader>
       
       <CardContent className="flex-grow">
@@ -60,23 +60,23 @@ const GameCard: React.FC<GameCardProps> = ({ game, onToggleFavorite, onViewDetai
         
         <div className="flex flex-col gap-2 text-sm text-teal-700">
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-teal-500" />
-            <span>{game.minParticipants} - {game.maxParticipants} participants</span>
+            <Users className="h-4 w-4 text-teal-500 flex-shrink-0" />
+            <span className="text-xs sm:text-sm">{game.minParticipants} - {game.maxParticipants} participants</span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-teal-500" />
-            <span>{game.duration} minutes</span>
+            <Clock className="h-4 w-4 text-teal-500 flex-shrink-0" />
+            <span className="text-xs sm:text-sm">{game.duration} minutes</span>
           </div>
           <div className="flex items-center gap-2">
-            <GraduationCap className="h-4 w-4 text-teal-500" />
-            <Badge variant={(knowledgeLevelColor[game.requiredKnowledgeLevel] || 'default') as "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"}>
+            <GraduationCap className="h-4 w-4 text-teal-500 flex-shrink-0" />
+            <Badge variant={(knowledgeLevelColor[game.requiredKnowledgeLevel] || 'default') as "default" | "secondary" | "purple" | "success" | "warning" | "danger" | "outline"} className="text-xs">
               {game.requiredKnowledgeLevel}
             </Badge>
           </div>
           {game.isAccessible && (
             <div className="flex items-center gap-2 text-emerald-600">
-              <Accessibility className="h-4 w-4" />
-              <span>Disability-friendly</span>
+              <Accessibility className="h-4 w-4 flex-shrink-0" />
+              <span className="text-xs sm:text-sm">Disability-friendly</span>
             </div>
           )}
         </div>
@@ -85,7 +85,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onToggleFavorite, onViewDetai
       <CardFooter className="pt-2 bg-gradient-to-r from-teal-50 to-purple-50">
         <Button 
           variant="default" 
-          className="w-full"
+          className="w-full text-sm sm:text-base"
           onClick={() => onViewDetails(game.id)}
         >
           View Details

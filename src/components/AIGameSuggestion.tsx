@@ -135,21 +135,21 @@ const AIGameSuggestion: React.FC<AIGameSuggestionProps> = ({ onGameGenerated }) 
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold mb-4">AI Game Suggestion</h2>
+    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+      <h2 className="text-lg sm:text-xl font-semibold mb-4">AI Game Suggestion</h2>
       
       <div className="mb-4">
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Optional: Describe the type of game you're looking for..."
-          className="w-full p-3 border border-gray-300 rounded-md"
+          className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
           rows={3}
         />
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md">
+        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm sm:text-base">
           {error}
         </div>
       )}
@@ -158,7 +158,7 @@ const AIGameSuggestion: React.FC<AIGameSuggestionProps> = ({ onGameGenerated }) 
         <Button
           onClick={generateGame}
           disabled={loading}
-          className="w-full"
+          className="w-full text-sm sm:text-base"
         >
           {loading ? (
             <>
@@ -173,18 +173,18 @@ const AIGameSuggestion: React.FC<AIGameSuggestionProps> = ({ onGameGenerated }) 
 
       {suggestedGame && (
         <div className="mt-4">
-          <div className="flex justify-center space-x-4">
+          <div className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4">
             <Button
               onClick={handleDislike}
               variant="outline"
-              className="flex items-center"
+              className="flex items-center justify-center w-full sm:w-auto text-sm sm:text-base"
             >
               <ThumbsDown className="mr-2 h-4 w-4" />
               {savedGameId ? 'Dislike' : 'Try Another'}
             </Button>
             <Button
               onClick={handleLike}
-              className="flex items-center"
+              className="flex items-center justify-center w-full sm:w-auto text-sm sm:text-base"
             >
               <ThumbsUp className="mr-2 h-4 w-4" />
               {savedGameId ? 'Like' : 'Save This Game'}

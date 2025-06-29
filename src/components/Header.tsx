@@ -11,17 +11,17 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   return (
-    <header className="bg-gradient-to-r from-teal-500 to-purple-400 shadow-lg py-4 px-6 mb-6">
+    <header className="bg-gradient-to-r from-teal-500 to-purple-400 shadow-lg py-4 px-4 sm:px-6 mb-6">
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center min-w-0">
             <img 
               src="/1749172667026.png" 
               alt="Agile GamifAI Logo" 
-              className="h-12 w-12 mr-3 rounded-lg shadow-md"
+              className="h-10 sm:h-12 w-10 sm:w-12 mr-3 rounded-lg shadow-md flex-shrink-0"
             />
             {/* Main application title */}
-            <h1 className="text-xl font-bold text-white">Agile Games</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-white truncate">Agile Games</h1>
           </div>
 
           {/* Mobile menu button */}

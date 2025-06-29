@@ -96,14 +96,14 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-6 border border-teal-100">
-      <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
+    <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 mb-6 border border-teal-100">
+      <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-4">
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-teal-400 h-4 w-4" />
           <input
             type="text"
             placeholder="Search games..."
-            className="w-full pl-10 pr-4 py-2 border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            className="w-full pl-10 pr-4 py-2 sm:py-3 text-sm sm:text-base border border-teal-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             value={filters.searchTerm}
             onChange={(e) => updateSearchTerm(e.target.value)}
           />
@@ -111,7 +111,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
         
         <Button 
           variant="outline" 
-          className="flex items-center gap-2 whitespace-nowrap border-teal-300 text-teal-700 hover:bg-teal-50"
+          className="flex items-center gap-2 w-full sm:w-auto whitespace-nowrap border-teal-300 text-teal-700 hover:bg-teal-50 text-sm sm:text-base"
           onClick={() => setExpanded(!expanded)}
         >
           <Filter className="h-4 w-4" />
@@ -176,9 +176,9 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <h3 className="font-medium text-teal-700 mb-2">
+              <h3 className="font-medium text-sm sm:text-base text-teal-700 mb-2">
                 Team Size: {filters.participants > 0 ? `${filters.participants}+ participants` : 'Any'}
               </h3>
               <input
@@ -193,7 +193,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
             </div>
 
             <div>
-              <h3 className="font-medium text-teal-700 mb-2">
+              <h3 className="font-medium text-sm sm:text-base text-teal-700 mb-2">
                 Max Duration: {filters.maxDuration} minutes
               </h3>
               <input
@@ -234,15 +234,15 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
                 onChange={toggleAccessibleOnly}
                 className="h-4 w-4 text-teal-600 rounded border-teal-300 focus:ring-teal-500"
               />
-              <span className="text-sm font-medium text-teal-700 flex items-center">
-                <Accessibility className="h-4 w-4 mr-1" />
+              <span className="text-xs sm:text-sm font-medium text-teal-700 flex items-center">
+                <Accessibility className="h-4 w-4 mr-1 flex-shrink-0" />
                 Show only disability-friendly games
               </span>
             </label>
           </div>
 
           <div className="flex justify-end">
-            <Button variant="ghost" onClick={resetFilters} className="text-teal-600 hover:bg-teal-100">
+            <Button variant="ghost" onClick={resetFilters} className="text-teal-600 hover:bg-teal-100 text-sm sm:text-base">
               Reset Filters
             </Button>
           </div>
