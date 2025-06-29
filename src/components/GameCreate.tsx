@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Minus, Loader2, Coffee } from 'lucide-react';
+import { ArrowLeft, Plus, Minus, Loader2 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Game, AgileFramework, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
 import { Badge } from './ui/Badge';
@@ -213,27 +213,27 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
 
   return (
     <div className="bg-white rounded-lg shadow-xl overflow-hidden border border-teal-100">
-      <div className="bg-gradient-to-r from-teal-500 to-purple-400 p-6 text-white">
+      <div className="bg-gradient-to-r from-teal-500 to-purple-400 p-4 sm:p-6 text-white">
         <div className="flex items-center mb-4">
           <Button 
             variant="ghost" 
             size="icon"
-            className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white mr-3"
+            className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white mr-3 flex-shrink-0"
             onClick={onBack}
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold">Create New Agile Game</h1>
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold leading-tight">Create New Agile Game</h1>
         </div>
       </div>
       
-      <form onSubmit={handleSubmit} className="p-6">
+      <form onSubmit={handleSubmit} className="p-4 sm:p-6">
         <div className="mb-6">
           <Button
             type="button"
             onClick={generateMissingFields}
             disabled={isGenerating}
-            className="w-full bg-gradient-to-r from-purple-500 to-teal-500 hover:from-purple-600 hover:to-teal-600"
+            className="w-full text-sm sm:text-base bg-gradient-to-r from-purple-500 to-teal-500 hover:from-purple-600 hover:to-teal-600"
           >
             {isGenerating ? (
               <>
@@ -246,7 +246,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-teal-700 mb-1">
               Game Title
@@ -258,7 +258,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
                 setGame({ ...game, title: e.target.value });
                 if (errors.title) setErrors({ ...errors, title: undefined });
               }}
-              className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.title ? 'border-red-500' : 'border-teal-300'}`}
+              className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.title ? 'border-red-500' : 'border-teal-300'}`}
               placeholder="e.g., Sailboat Retrospective"
             />
             {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
@@ -275,7 +275,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
                   type="button"
                   variant={game.complexity === complexity ? "default" : "outline"}
                   onClick={() => setGame({ ...game, complexity })}
-                  className="flex-1"
+                  className="flex-1 text-xs sm:text-sm"
                 >
                   {complexity}
                 </Button>
@@ -294,7 +294,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               setGame({ ...game, description: e.target.value });
               if (errors.description) setErrors({ ...errors, description: undefined });
             }}
-            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.description ? 'border-red-500' : 'border-teal-300'}`}
+            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.description ? 'border-red-500' : 'border-teal-300'}`}
             rows={2}
             placeholder="Brief description of the game and its purpose"
           />
@@ -305,14 +305,14 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
           <label className="block text-sm font-medium text-teal-700 mb-1">
             Required Knowledge Level
           </label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {knowledgeLevels.map((level) => (
               <Button
                 key={level}
                 type="button"
                 variant={game.requiredKnowledgeLevel === level ? "secondary" : "outline"}
                 onClick={() => setGame({ ...game, requiredKnowledgeLevel: level })}
-                className="flex-1"
+                className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4"
               >
                 {level}
               </Button>
@@ -406,7 +406,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               step="5"
               value={game.duration}
               onChange={(e) => setGame({ ...game, duration: parseInt(e.target.value) })}
-              className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              className="w-full p-2 sm:p-3 text-sm sm:text-base border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             />
           </div>
         </div>
@@ -433,7 +433,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
                 type="text"
                 value={outcome}
                 onChange={(e) => updateLearningOutcome(index, e.target.value)}
-                className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full p-2 sm:p-3 text-sm sm:text-base border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 placeholder="e.g., Understand the importance of team collaboration"
               />
               <Button
@@ -475,7 +475,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
                 type="text"
                 value={material}
                 onChange={(e) => updateMaterial(index, e.target.value)}
-                className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full p-2 sm:p-3 text-sm sm:text-base border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 placeholder={`Material ${index + 1}`}
               />
               <Button
@@ -502,7 +502,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               setGame({ ...game, instructions: e.target.value });
               if (errors.instructions) setErrors({ ...errors, instructions: undefined });
             }}
-            className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.instructions ? 'border-red-500' : 'border-teal-300'}`}
+            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.instructions ? 'border-red-500' : 'border-teal-300'}`}
             rows={5}
             placeholder="Step-by-step instructions for running the game"
           />
@@ -516,7 +516,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
           <textarea
             value={game.facilitationTips}
             onChange={(e) => setGame({ ...game, facilitationTips: e.target.value })}
-            className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+            className="w-full p-2 sm:p-3 text-sm sm:text-base border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             rows={3}
             placeholder="Helpful tips for facilitating the game effectively"
           />
@@ -551,7 +551,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
                     setErrors({ ...errors, accessibilityNotes: undefined });
                   }
                 }}
-                className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${
+                className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${
                   errors.accessibilityNotes ? 'border-red-500' : 'border-teal-300'
                 }`}
                 rows={3}
@@ -564,28 +564,15 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
           )}
         </div>
         
-        <div className="flex justify-end space-x-4">
-          <Button type="button" variant="outline" onClick={onBack}>
+        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
+          <Button type="button" variant="outline" onClick={onBack} className="w-full sm:w-auto text-sm sm:text-base">
             Cancel
           </Button>
-          <Button type="submit" className="bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600">
+          <Button type="submit" className="w-full sm:w-auto text-sm sm:text-base bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600">
             Save Game
           </Button>
         </div>
       </form>
-
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-teal-200 p-4">
-        <div className="container mx-auto flex justify-center">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 border-teal-300 text-teal-700 hover:bg-teal-50"
-            onClick={() => window.open('https://coff.ee/AgileGamifAI', '_blank')}
-          >
-            <Coffee className="h-4 w-4" />
-            Buy me a ☕️
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };
