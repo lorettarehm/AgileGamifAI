@@ -18,10 +18,17 @@ HF_ACCESS_TOKEN=your_huggingface_access_token
 
 ### 2. Automatic Deployment
 
-The application will automatically deploy with:
-- ✅ Secure serverless functions at `/.netlify/functions/`
-- ✅ Client-side React application
-- ✅ Proper CORS headers for API calls
+The application automatically deploys to Netlify via GitHub Actions when changes are pushed to the main branch:
+
+- ✅ **GitHub Actions Workflow**: Builds and deploys to both GitHub Pages and Netlify
+- ✅ **Netlify Site**: https://agile-gamifai.netlify.app/
+- ✅ **Secure serverless functions** at `/.netlify/functions/`
+- ✅ **Client-side React application**
+- ✅ **Proper CORS headers** for API calls
+
+**GitHub Secrets Required:**
+- `NETLIFY_AUTH_TOKEN` - Your Netlify personal access token
+- `NETLIFY_SITE_ID` - Your Netlify site ID
 
 ### 3. Function Endpoints
 
