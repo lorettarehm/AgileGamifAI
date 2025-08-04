@@ -339,5 +339,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Ready to transform your Agile practices?** [Start exploring games now!](https://agilegamifai.com) 🚀
+**Ready to transform your Agile practices?** [Start exploring games now!](https://lorettarehm.github.io/AgileGamifAI) 🚀
 =======
