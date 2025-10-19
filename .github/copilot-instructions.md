@@ -75,6 +75,8 @@ src/
 
 ### Setup
 ```bash
+# Note: --legacy-peer-deps is required due to React 19 type definitions
+# not being fully compatible with @types/react-dom@18.3.7
 npm install --legacy-peer-deps
 npm run dev
 ```
