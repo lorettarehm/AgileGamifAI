@@ -27,8 +27,8 @@ describe('LLMService', () => {
         baseUrl: 'http://localhost:8888',
         rateLimit: {
           remaining: expect.any(Number),
-          resetTime: expect.any(Number)
-        }
+          resetTime: expect.any(Number),
+        },
       });
     });
   });
@@ -37,7 +37,7 @@ describe('LLMService', () => {
     it('should call serverless function endpoint', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ data: { title: 'Test Game' } })
+        json: jest.fn().mockResolvedValue({ data: { title: 'Test Game' } }),
       };
       (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
 
@@ -55,8 +55,8 @@ describe('LLMService', () => {
           },
           body: JSON.stringify({
             partialGameData,
-            systemPrompt
-          })
+            systemPrompt,
+          }),
         }
       );
 
@@ -69,9 +69,9 @@ describe('LLMService', () => {
       const partialGameData = { title: 'Test' };
       const systemPrompt = 'Test prompt';
 
-      await expect(
-        llmService.generateGameData(partialGameData, systemPrompt)
-      ).rejects.toThrow('Failed to generate game data. Please try again.');
+      await expect(llmService.generateGameData(partialGameData, systemPrompt)).rejects.toThrow(
+        'Failed to generate game data. Please try again.'
+      );
     });
   });
 
@@ -79,7 +79,7 @@ describe('LLMService', () => {
     it('should call serverless function endpoint', async () => {
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ data: { title: 'Complete Game' } })
+        json: jest.fn().mockResolvedValue({ data: { title: 'Complete Game' } }),
       };
       (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
 
@@ -97,8 +97,8 @@ describe('LLMService', () => {
           },
           body: JSON.stringify({
             userPrompt,
-            systemPrompt
-          })
+            systemPrompt,
+          }),
         }
       );
 

@@ -46,7 +46,7 @@ export const mockGames: Game[] = [
     maxParticipants: 10,
   }),
   createMockGame({
-    id: '2', 
+    id: '2',
     title: 'Kanban Retrospective',
     framework: ['Kanban'],
     purpose: ['Retrospective'],

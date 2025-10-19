@@ -15,9 +15,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center min-w-0">
-            <img 
-              src="/1749172667026.png" 
-              alt="Agile GamifAI Logo" 
+            <img
+              src="/1749172667026.png"
+              alt="Agile GamifAI Logo"
               className="h-10 sm:h-12 w-10 sm:w-12 mr-3 rounded-lg shadow-md flex-shrink-0"
             />
             {/* Main application title */}
@@ -33,14 +33,14 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
           >
             <Menu className="h-6 w-6" />
           </Button>
-          
+
           {/* Desktop navigation */}
           <nav className="hidden md:flex space-x-2">
             <Button
               variant={currentView === 'library' ? 'secondary' : 'ghost'}
               className={`flex items-center ${
-                currentView === 'library' 
-                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                currentView === 'library'
+                  ? 'bg-white/20 text-white hover:bg-white/30'
                   : 'text-white hover:bg-white/20'
               }`}
               onClick={() => onViewChange('library')}
@@ -49,12 +49,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               <LayoutGrid className="h-4 w-4 mr-2" />
               Library
             </Button>
-            
+
             <Button
               variant={currentView === 'favorites' ? 'secondary' : 'ghost'}
               className={`flex items-center ${
-                currentView === 'favorites' 
-                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                currentView === 'favorites'
+                  ? 'bg-white/20 text-white hover:bg-white/30'
                   : 'text-white hover:bg-white/20'
               }`}
               onClick={() => onViewChange('favorites')}
@@ -63,12 +63,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               <Heart className="h-4 w-4 mr-2" />
               Favorites
             </Button>
-            
+
             <Button
               variant={currentView === 'create' ? 'secondary' : 'ghost'}
               className={`flex items-center ${
-                currentView === 'create' 
-                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                currentView === 'create'
+                  ? 'bg-white/20 text-white hover:bg-white/30'
                   : 'text-white hover:bg-white/20'
               }`}
               onClick={() => onViewChange('create')}
@@ -86,8 +86,8 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
             <Button
               variant={currentView === 'library' ? 'secondary' : 'ghost'}
               className={`flex items-center w-full justify-start ${
-                currentView === 'library' 
-                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                currentView === 'library'
+                  ? 'bg-white/20 text-white hover:bg-white/30'
                   : 'text-white hover:bg-white/20'
               }`}
               onClick={() => {
@@ -99,12 +99,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               <LayoutGrid className="h-4 w-4 mr-2" />
               Library
             </Button>
-            
+
             <Button
               variant={currentView === 'favorites' ? 'secondary' : 'ghost'}
               className={`flex items-center w-full justify-start ${
-                currentView === 'favorites' 
-                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                currentView === 'favorites'
+                  ? 'bg-white/20 text-white hover:bg-white/30'
                   : 'text-white hover:bg-white/20'
               }`}
               onClick={() => {
@@ -116,12 +116,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               <Heart className="h-4 w-4 mr-2" />
               Favorites
             </Button>
-            
+
             <Button
               variant={currentView === 'create' ? 'secondary' : 'ghost'}
               className={`flex items-center w-full justify-start ${
-                currentView === 'create' 
-                  ? 'bg-white/20 text-white hover:bg-white/30' 
+                currentView === 'create'
+                  ? 'bg-white/20 text-white hover:bg-white/30'
                   : 'text-white hover:bg-white/20'
               }`}
               onClick={() => {

@@ -13,13 +13,8 @@ describe('GameFilter', () => {
 
   test('should filter by framework', () => {
     const filters = createMockFilters();
-    
-    render(
-      <GameFilter 
-        filters={filters}
-        onFilterChange={mockOnFilterChange}
-      />
-    );
+
+    render(<GameFilter filters={filters} onFilterChange={mockOnFilterChange} />);
 
     // First expand the filter panel to access framework badges
     const expandButton = screen.getByText(/show filters/i);
@@ -28,22 +23,17 @@ describe('GameFilter', () => {
     // Test single framework selection
     const scrumBadge = screen.getByText('Scrum');
     fireEvent.click(scrumBadge);
-    
+
     expect(mockOnFilterChange).toHaveBeenCalledWith({
       ...filters,
-      framework: ['Scrum']
+      framework: ['Scrum'],
     });
   });
 
   test('should filter by purpose, complexity, and knowledge level', () => {
     const filters = createMockFilters();
-    
-    render(
-      <GameFilter 
-        filters={filters}
-        onFilterChange={mockOnFilterChange}
-      />
-    );
+
+    render(<GameFilter filters={filters} onFilterChange={mockOnFilterChange} />);
 
     // First expand the filter panel to access all options
     const expandButton = screen.getByText(/show filters/i);
@@ -52,42 +42,32 @@ describe('GameFilter', () => {
     // Test purpose selection
     const teamBuildingBadge = screen.getByText('Team Building');
     fireEvent.click(teamBuildingBadge);
-    
+
     expect(mockOnFilterChange).toHaveBeenCalledWith({
       ...filters,
-      purpose: ['Team Building']
+      purpose: ['Team Building'],
     });
   });
 
   test('should perform text search', () => {
     const filters = createMockFilters();
-    
-    render(
-      <GameFilter 
-        filters={filters}
-        onFilterChange={mockOnFilterChange}
-      />
-    );
+
+    render(<GameFilter filters={filters} onFilterChange={mockOnFilterChange} />);
 
     // Test text search input
     const searchInput = screen.getByPlaceholderText(/search games/i);
     fireEvent.change(searchInput, { target: { value: 'retrospective' } });
-    
+
     expect(mockOnFilterChange).toHaveBeenCalledWith({
       ...filters,
-      searchTerm: 'retrospective'
+      searchTerm: 'retrospective',
     });
   });
 
   test('should filter by accessibility requirements', () => {
     const filters = createMockFilters();
-    
-    render(
-      <GameFilter 
-        filters={filters}
-        onFilterChange={mockOnFilterChange}
-      />
-    );
+
+    render(<GameFilter filters={filters} onFilterChange={mockOnFilterChange} />);
 
     // First expand the filter panel
     const expandButton = screen.getByText(/show filters/i);
@@ -96,25 +76,20 @@ describe('GameFilter', () => {
     // Test accessibility checkbox
     const accessibilityCheckbox = screen.getByRole('checkbox');
     fireEvent.click(accessibilityCheckbox);
-    
+
     expect(mockOnFilterChange).toHaveBeenCalledWith({
       ...filters,
-      accessibleOnly: true
+      accessibleOnly: true,
     });
   });
 
   test('should handle combined filter behavior', () => {
     const filters = createMockFilters({
       framework: ['Scrum'],
-      purpose: ['Team Building']
+      purpose: ['Team Building'],
     });
-    
-    render(
-      <GameFilter 
-        filters={filters}
-        onFilterChange={mockOnFilterChange}
-      />
-    );
+
+    render(<GameFilter filters={filters} onFilterChange={mockOnFilterChange} />);
 
     // First expand the filter panel
     const expandButton = screen.getByText(/show filters/i);
@@ -123,10 +98,10 @@ describe('GameFilter', () => {
     // Test adding another framework
     const kanbanBadge = screen.getByText('Kanban');
     fireEvent.click(kanbanBadge);
-    
+
     expect(mockOnFilterChange).toHaveBeenCalledWith({
       ...filters,
-      framework: ['Scrum', 'Kanban']
+      framework: ['Scrum', 'Kanban'],
     });
   });
 
@@ -135,15 +110,10 @@ describe('GameFilter', () => {
       framework: ['Scrum'],
       purpose: ['Team Building'],
       searchTerm: 'test',
-      accessibleOnly: true
+      accessibleOnly: true,
     });
-    
-    render(
-      <GameFilter 
-        filters={filters}
-        onFilterChange={mockOnFilterChange}
-      />
-    );
+
+    render(<GameFilter filters={filters} onFilterChange={mockOnFilterChange} />);
 
     // First expand the filter panel
     const expandButton = screen.getByText(/show filters/i);
@@ -152,7 +122,7 @@ describe('GameFilter', () => {
     // Find and click the reset button
     const resetButton = screen.getByText(/reset filters/i);
     fireEvent.click(resetButton);
-    
+
     expect(mockOnFilterChange).toHaveBeenCalledWith(
       createMockFilters() // Should reset to default empty filters
     );

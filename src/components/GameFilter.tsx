@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import { Search, Filter, ChevronDown, ChevronUp, Accessibility } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
-import { GameFilters, AgileFramework, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
+import {
+  GameFilters,
+  AgileFramework,
+  GamePurpose,
+  GameComplexity,
+  AgileKnowledgeLevel,
+} from '../types';
 
 interface GameFilterProps {
   filters: GameFilters;
@@ -12,57 +18,65 @@ interface GameFilterProps {
 const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const frameworks: AgileFramework[] = ['Scrum', 'Kanban', 'XP', 'Lean', 'LeSS', 'Nexus', 'General'];
+  const frameworks: AgileFramework[] = [
+    'Scrum',
+    'Kanban',
+    'XP',
+    'Lean',
+    'LeSS',
+    'Nexus',
+    'General',
+  ];
   const purposes: GamePurpose[] = [
-    'Team Building', 
-    'Problem Solving', 
-    'Retrospective', 
-    'Estimation', 
-    'Planning', 
+    'Team Building',
+    'Problem Solving',
+    'Retrospective',
+    'Estimation',
+    'Planning',
     'Prioritization',
-    'Process Improvement'
+    'Process Improvement',
   ];
   const complexities: GameComplexity[] = ['Easy', 'Medium', 'Hard'];
   const knowledgeLevels: AgileKnowledgeLevel[] = [
     'New to Agile',
     'Agile Basics',
     'Agile Practitioner',
-    'Agile Master'
+    'Agile Master',
   ];
 
   const toggleFramework = (framework: AgileFramework) => {
     const current = filters.framework;
     const updated = current.includes(framework)
-      ? current.filter(m => m !== framework)
+      ? current.filter((m) => m !== framework)
       : [...current, framework];
-    
+
     onFilterChange({ ...filters, framework: updated });
   };
 
   const togglePurpose = (purpose: GamePurpose) => {
     const current = filters.purpose;
     const updated = current.includes(purpose)
-      ? current.filter(p => p !== purpose)
+      ? current.filter((p) => p !== purpose)
       : [...current, purpose];
-    
+
     onFilterChange({ ...filters, purpose: updated });
   };
 
   const toggleComplexity = (complexity: GameComplexity) => {
     const current = filters.complexity;
     const updated = current.includes(complexity)
-      ? current.filter(c => c !== complexity)
+      ? current.filter((c) => c !== complexity)
       : [...current, complexity];
-    
+
     onFilterChange({ ...filters, complexity: updated });
   };
 
   const toggleKnowledgeLevel = (level: AgileKnowledgeLevel) => {
     const current = filters.knowledgeLevel;
     const updated = current.includes(level)
-      ? current.filter(l => l !== level)
+      ? current.filter((l) => l !== level)
       : [...current, level];
-    
+
     onFilterChange({ ...filters, knowledgeLevel: updated });
   };
 
@@ -91,7 +105,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
       complexity: [],
       searchTerm: '',
       knowledgeLevel: [],
-      accessibleOnly: false
+      accessibleOnly: false,
     });
   };
 
@@ -108,14 +122,14 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
             onChange={(e) => updateSearchTerm(e.target.value)}
           />
         </div>
-        
-        <Button 
-          variant="outline" 
+
+        <Button
+          variant="outline"
           className="flex items-center gap-2 w-full sm:w-auto whitespace-nowrap border-teal-300 text-teal-700 hover:bg-teal-50 text-sm sm:text-base"
           onClick={() => setExpanded(!expanded)}
         >
           <Filter className="h-4 w-4" />
-          {expanded ? "Hide Filters" : "Show Filters"}
+          {expanded ? 'Hide Filters' : 'Show Filters'}
           {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </Button>
       </div>
@@ -128,7 +142,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
               {frameworks.map((framework) => (
                 <Badge
                   key={framework}
-                  variant={filters.framework.includes(framework) ? "default" : "outline"}
+                  variant={filters.framework.includes(framework) ? 'default' : 'outline'}
                   className={`cursor-pointer transition-colors ${
                     filters.framework.includes(framework) ? '' : 'hover:bg-teal-100'
                   }`}
@@ -146,7 +160,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
               {purposes.map((purpose) => (
                 <Badge
                   key={purpose}
-                  variant={filters.purpose.includes(purpose) ? "secondary" : "outline"}
+                  variant={filters.purpose.includes(purpose) ? 'secondary' : 'outline'}
                   className={`cursor-pointer transition-colors ${
                     filters.purpose.includes(purpose) ? '' : 'hover:bg-purple-100'
                   }`}
@@ -164,7 +178,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
               {knowledgeLevels.map((level) => (
                 <Badge
                   key={level}
-                  variant={filters.knowledgeLevel.includes(level) ? "purple" : "outline"}
+                  variant={filters.knowledgeLevel.includes(level) ? 'purple' : 'outline'}
                   className={`cursor-pointer transition-colors ${
                     filters.knowledgeLevel.includes(level) ? '' : 'hover:bg-purple-100'
                   }`}
@@ -179,7 +193,8 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <h3 className="font-medium text-sm sm:text-base text-teal-700 mb-2">
-                Team Size: {filters.participants > 0 ? `${filters.participants}+ participants` : 'Any'}
+                Team Size:{' '}
+                {filters.participants > 0 ? `${filters.participants}+ participants` : 'Any'}
               </h3>
               <input
                 type="range"
@@ -214,7 +229,7 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
               {complexities.map((complexity) => (
                 <Badge
                   key={complexity}
-                  variant={filters.complexity.includes(complexity) ? "purple" : "outline"}
+                  variant={filters.complexity.includes(complexity) ? 'purple' : 'outline'}
                   className={`cursor-pointer transition-colors ${
                     filters.complexity.includes(complexity) ? '' : 'hover:bg-purple-100'
                   }`}
@@ -242,7 +257,11 @@ const GameFilter: React.FC<GameFilterProps> = ({ filters, onFilterChange }) => {
           </div>
 
           <div className="flex justify-end">
-            <Button variant="ghost" onClick={resetFilters} className="text-teal-600 hover:bg-teal-100 text-sm sm:text-base">
+            <Button
+              variant="ghost"
+              onClick={resetFilters}
+              className="text-teal-600 hover:bg-teal-100 text-sm sm:text-base"
+            >
               Reset Filters
             </Button>
           </div>
