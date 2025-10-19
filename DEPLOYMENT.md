@@ -27,6 +27,7 @@ The application automatically deploys to Netlify via GitHub Actions when changes
 - ✅ **Proper CORS headers** for API calls
 
 **GitHub Secrets Required:**
+
 - `NETLIFY_AUTH_TOKEN` - Your Netlify personal access token
 - `NETLIFY_SITE_ID` - Your Netlify site ID
 
@@ -67,7 +68,7 @@ Note: AI features will not work without the serverless functions.
 ✅ **Reduced Bundle Size**: 15KB smaller without client-side AI library  
 ✅ **Rate Limiting Ready**: Can be implemented at function level  
 ✅ **Cost Control**: Centralized API usage tracking  
-✅ **Production Ready**: Secure architecture suitable for public deployment  
+✅ **Production Ready**: Secure architecture suitable for public deployment
 
 ## Migration Summary
 

@@ -14,7 +14,7 @@ describe('GameGrid', () => {
 
   test('should display games in responsive grid', () => {
     render(
-      <GameGrid 
+      <GameGrid
         games={mockGames}
         onToggleFavorite={mockOnToggleFavorite}
         onViewDetails={mockOnViewDetails}
@@ -29,7 +29,7 @@ describe('GameGrid', () => {
 
   test('should handle empty states', () => {
     render(
-      <GameGrid 
+      <GameGrid
         games={[]}
         onToggleFavorite={mockOnToggleFavorite}
         onViewDetails={mockOnViewDetails}
@@ -49,7 +49,7 @@ describe('GameGrid', () => {
     });
 
     render(
-      <GameGrid 
+      <GameGrid
         games={[singleGame]}
         onToggleFavorite={mockOnToggleFavorite}
         onViewDetails={mockOnViewDetails}
@@ -61,7 +61,7 @@ describe('GameGrid', () => {
 
   test('should render correct number of game cards', () => {
     render(
-      <GameGrid 
+      <GameGrid
         games={mockGames}
         onToggleFavorite={mockOnToggleFavorite}
         onViewDetails={mockOnViewDetails}

@@ -25,12 +25,13 @@ export const sampleGames: Game[] = [
       - Use relative sizing rather than absolute time estimates
     `,
     complexity: 'Easy',
-    isFavorite: false
+    isFavorite: false,
   },
   {
     id: '2',
     title: 'Sailboat Retrospective',
-    description: 'A visual retrospective technique that helps teams identify what\'s helping or hindering progress',
+    description:
+      "A visual retrospective technique that helps teams identify what's helping or hindering progress",
     framework: ['Scrum', 'Kanban', 'XP'],
     purpose: ['Retrospective', 'Process Improvement'],
     minParticipants: 4,
@@ -51,7 +52,7 @@ export const sampleGames: Game[] = [
       - End with clear action items and owners
     `,
     complexity: 'Medium',
-    isFavorite: false
+    isFavorite: false,
   },
   {
     id: '3',
@@ -78,7 +79,7 @@ export const sampleGames: Game[] = [
       - Connect the game to real-world process improvement
     `,
     complexity: 'Medium',
-    isFavorite: false
+    isFavorite: false,
   },
   {
     id: '4',
@@ -90,10 +91,10 @@ export const sampleGames: Game[] = [
     maxParticipants: 15,
     duration: 60,
     materials: [
-      'Paper for "pizza bases"', 
-      'Colored markers or stickers for "toppings"', 
-      'Index cards for orders', 
-      'Flipchart for Kanban board'
+      'Paper for "pizza bases"',
+      'Colored markers or stickers for "toppings"',
+      'Index cards for orders',
+      'Flipchart for Kanban board',
     ],
     instructions: `
       1. Set up workstations for different pizza-making steps
@@ -110,7 +111,7 @@ export const sampleGames: Game[] = [
       - Connect the game to real work management in the team
     `,
     complexity: 'Hard',
-    isFavorite: false
+    isFavorite: false,
   },
   {
     id: '5',
@@ -136,6 +137,6 @@ export const sampleGames: Game[] = [
       - Discuss surprising results after voting completes
     `,
     complexity: 'Easy',
-    isFavorite: false
-  }
+    isFavorite: false,
+  },
 ];

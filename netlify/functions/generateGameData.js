@@ -13,9 +13,9 @@ exports.handler = async (event, context) => {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
       },
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({ error: 'Method not allowed' }),
     };
   }
 
@@ -26,27 +26,27 @@ exports.handler = async (event, context) => {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
       },
-      body: ''
+      body: '',
     };
   }
 
   try {
     // Get API key from environment (server-side only)
     const apiKey = process.env.HF_ACCESS_TOKEN;
-    
+
     if (!apiKey) {
       console.error('LLM API: No API key configured');
       return {
         statusCode: 500,
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          error: 'LLM service is not configured. Please check server configuration.' 
-        })
+        body: JSON.stringify({
+          error: 'LLM service is not configured. Please check server configuration.',
+        }),
       };
     }
 
@@ -58,22 +58,22 @@ exports.handler = async (event, context) => {
         statusCode: 400,
         headers: {
           'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          error: 'Missing required parameters: partialGameData and systemPrompt' 
-        })
+        body: JSON.stringify({
+          error: 'Missing required parameters: partialGameData and systemPrompt',
+        }),
       };
     }
 
     // Initialize HuggingFace client
     const hf = new HfInference(apiKey);
-    
+
     // Configure LLM parameters
     const config = {
       defaultModel: 'deepseek-ai/deepseek-v2-lite-chat',
       maxTokens: 1000,
-      temperature: 0.7
+      temperature: 0.7,
     };
 
     // Create prompt
@@ -86,8 +86,8 @@ exports.handler = async (event, context) => {
       parameters: {
         max_new_tokens: config.maxTokens,
         temperature: config.temperature,
-        return_full_text: false
-      }
+        return_full_text: false,
+      },
     });
 
     if (!response.generated_text) {
@@ -101,23 +101,22 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ data: gameData })
+      body: JSON.stringify({ data: gameData }),
     };
-
   } catch (error) {
     console.error('LLM API Error:', error);
-    
+
     return {
       statusCode: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
-        error: 'Failed to generate game data. Please try again.' 
-      })
+      body: JSON.stringify({
+        error: 'Failed to generate game data. Please try again.',
+      }),
     };
   }
 };

@@ -5,11 +5,9 @@ interface CardProps {
   className?: string;
 }
 
-export const Card = ({ children, className = "" }: CardProps) => {
+export const Card = ({ children, className = '' }: CardProps) => {
   return (
-    <div className={`bg-white rounded-lg shadow-md overflow-hidden ${className}`}>
-      {children}
-    </div>
+    <div className={`bg-white rounded-lg shadow-md overflow-hidden ${className}`}>{children}</div>
   );
 };
 
@@ -18,12 +16,8 @@ interface CardHeaderProps {
   className?: string;
 }
 
-export const CardHeader = ({ children, className = "" }: CardHeaderProps) => {
-  return (
-    <div className={`p-6 ${className}`}>
-      {children}
-    </div>
-  );
+export const CardHeader = ({ children, className = '' }: CardHeaderProps) => {
+  return <div className={`p-6 ${className}`}>{children}</div>;
 };
 
 interface CardTitleProps {
@@ -31,12 +25,8 @@ interface CardTitleProps {
   className?: string;
 }
 
-export const CardTitle = ({ children, className = "" }: CardTitleProps) => {
-  return (
-    <h3 className={`text-xl font-semibold text-gray-900 ${className}`}>
-      {children}
-    </h3>
-  );
+export const CardTitle = ({ children, className = '' }: CardTitleProps) => {
+  return <h3 className={`text-xl font-semibold text-gray-900 ${className}`}>{children}</h3>;
 };
 
 interface CardDescriptionProps {
@@ -44,12 +34,8 @@ interface CardDescriptionProps {
   className?: string;
 }
 
-export const CardDescription = ({ children, className = "" }: CardDescriptionProps) => {
-  return (
-    <p className={`text-gray-500 mt-2 ${className}`}>
-      {children}
-    </p>
-  );
+export const CardDescription = ({ children, className = '' }: CardDescriptionProps) => {
+  return <p className={`text-gray-500 mt-2 ${className}`}>{children}</p>;
 };
 
 interface CardContentProps {
@@ -57,12 +43,8 @@ interface CardContentProps {
   className?: string;
 }
 
-export const CardContent = ({ children, className = "" }: CardContentProps) => {
-  return (
-    <div className={`px-6 py-4 ${className}`}>
-      {children}
-    </div>
-  );
+export const CardContent = ({ children, className = '' }: CardContentProps) => {
+  return <div className={`px-6 py-4 ${className}`}>{children}</div>;
 };
 
 interface CardFooterProps {
@@ -70,10 +52,6 @@ interface CardFooterProps {
   className?: string;
 }
 
-export const CardFooter = ({ children, className = "" }: CardFooterProps) => {
-  return (
-    <div className={`px-6 py-4 bg-gray-50 ${className}`}>
-      {children}
-    </div>
-  );
+export const CardFooter = ({ children, className = '' }: CardFooterProps) => {
+  return <div className={`px-6 py-4 bg-gray-50 ${className}`}>{children}</div>;
 };

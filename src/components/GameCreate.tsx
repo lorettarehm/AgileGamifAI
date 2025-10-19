@@ -26,7 +26,7 @@ const DEFAULT_GAME: Omit<Game, 'id'> = {
   learningOutcomes: [''],
   isAccessible: false,
   accessibilityNotes: '',
-  requiredKnowledgeLevel: 'Agile Basics'
+  requiredKnowledgeLevel: 'Agile Basics',
 };
 
 const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
@@ -34,35 +34,46 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
   const [errors, setErrors] = useState<Partial<Record<keyof Game, string>>>({});
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const frameworks: AgileFramework[] = ['Scrum', 'Kanban', 'XP', 'Lean', 'LeSS', 'Nexus', 'General'];
+  const frameworks: AgileFramework[] = [
+    'Scrum',
+    'Kanban',
+    'XP',
+    'Lean',
+    'LeSS',
+    'Nexus',
+    'General',
+  ];
   const purposes: GamePurpose[] = [
-    'Team Building', 
-    'Problem Solving', 
-    'Retrospective', 
-    'Estimation', 
-    'Planning', 
+    'Team Building',
+    'Problem Solving',
+    'Retrospective',
+    'Estimation',
+    'Planning',
     'Prioritization',
-    'Process Improvement'
+    'Process Improvement',
   ];
   const complexities: GameComplexity[] = ['Easy', 'Medium', 'Hard'];
   const knowledgeLevels: AgileKnowledgeLevel[] = [
     'New to Agile',
     'Agile Basics',
     'Agile Practitioner',
-    'Agile Master'
+    'Agile Master',
   ];
 
   const generateMissingFields = async () => {
     setIsGenerating(true);
     try {
-      const filledFields = Object.entries(game).reduce((acc, [key, value]) => {
-        if (Array.isArray(value) && value.length > 0 && value.every(v => v !== '')) {
-          acc[key] = value;
-        } else if (value !== '' && value !== false && value !== 0) {
-          acc[key] = value;
-        }
-        return acc;
-      }, {} as Record<string, unknown>);
+      const filledFields = Object.entries(game).reduce(
+        (acc, [key, value]) => {
+          if (Array.isArray(value) && value.length > 0 && value.every((v) => v !== '')) {
+            acc[key] = value;
+          } else if (value !== '' && value !== false && value !== 0) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {} as Record<string, unknown>
+      );
 
       const systemPrompt = `You are an expert Agile coach. Based on the following partial game information, complete the missing fields to create a cohesive Agile game. Return ONLY a JSON object with all fields.
 
@@ -86,20 +97,20 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
       }`;
 
       const generatedGame = await llmService.generateGameData(filledFields, systemPrompt);
-      
+
       const mergedGame = {
         ...DEFAULT_GAME,
         ...generatedGame,
-        ...filledFields
+        ...filledFields,
       };
 
       setGame(mergedGame);
       setErrors({});
     } catch (error) {
       console.error('Error generating game:', error);
-      setErrors({ 
-        ...errors, 
-        title: 'Failed to generate game. Please try again or fill in the fields manually.' 
+      setErrors({
+        ...errors,
+        title: 'Failed to generate game. Please try again or fill in the fields manually.',
       });
     } finally {
       setIsGenerating(false);
@@ -109,9 +120,9 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
   const toggleFramework = (framework: AgileFramework) => {
     const current = game.framework;
     const updated = current.includes(framework)
-      ? current.filter(m => m !== framework)
+      ? current.filter((m) => m !== framework)
       : [...current, framework];
-    
+
     setGame({ ...game, framework: updated });
     if (errors.framework) {
       setErrors({ ...errors, framework: undefined });
@@ -121,9 +132,9 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
   const togglePurpose = (purpose: GamePurpose) => {
     const current = game.purpose;
     const updated = current.includes(purpose)
-      ? current.filter(p => p !== purpose)
+      ? current.filter((p) => p !== purpose)
       : [...current, purpose];
-    
+
     setGame({ ...game, purpose: updated });
     if (errors.purpose) {
       setErrors({ ...errors, purpose: undefined });
@@ -166,46 +177,47 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof Game, string>> = {};
-    
+
     if (!game.title.trim()) {
       newErrors.title = 'Title is required';
     }
-    
+
     if (!game.description.trim()) {
       newErrors.description = 'Description is required';
     }
-    
+
     if (game.framework.length === 0) {
       newErrors.framework = 'At least one framework is required';
     }
-    
+
     if (game.purpose.length === 0) {
       newErrors.purpose = 'At least one purpose is required';
     }
-    
+
     if (!game.instructions.trim()) {
       newErrors.instructions = 'Instructions are required';
     }
-    
+
     if (game.minParticipants > game.maxParticipants) {
       newErrors.minParticipants = 'Min participants must be less than or equal to max participants';
     }
 
-    if (game.learningOutcomes.some(outcome => !outcome.trim())) {
+    if (game.learningOutcomes.some((outcome) => !outcome.trim())) {
       newErrors.learningOutcomes = 'All learning outcomes must be filled out';
     }
 
     if (game.isAccessible && !game.accessibilityNotes?.trim()) {
-      newErrors.accessibilityNotes = 'Accessibility notes are required when game is marked as accessible';
+      newErrors.accessibilityNotes =
+        'Accessibility notes are required when game is marked as accessible';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       onSaveGame(game);
     }
@@ -215,18 +227,20 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
     <div className="bg-white rounded-lg shadow-xl overflow-hidden border border-teal-100">
       <div className="bg-gradient-to-r from-teal-500 to-purple-400 p-4 sm:p-6 text-white">
         <div className="flex items-center mb-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 text-white mr-3 flex-shrink-0"
             onClick={onBack}
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold leading-tight">Create New Agile Game</h1>
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold leading-tight">
+            Create New Agile Game
+          </h1>
         </div>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="p-4 sm:p-6">
         <div className="mb-6">
           <Button
@@ -248,9 +262,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-teal-700 mb-1">
-              Game Title
-            </label>
+            <label className="block text-sm font-medium text-teal-700 mb-1">Game Title</label>
             <input
               type="text"
               value={game.title}
@@ -263,17 +275,15 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
             />
             {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-teal-700 mb-1">
-              Complexity
-            </label>
+            <label className="block text-sm font-medium text-teal-700 mb-1">Complexity</label>
             <div className="flex gap-2">
               {complexities.map((complexity) => (
                 <Button
                   key={complexity}
                   type="button"
-                  variant={game.complexity === complexity ? "default" : "outline"}
+                  variant={game.complexity === complexity ? 'default' : 'outline'}
                   onClick={() => setGame({ ...game, complexity })}
                   className="flex-1 text-xs sm:text-sm"
                 >
@@ -283,11 +293,9 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
             </div>
           </div>
         </div>
-        
+
         <div className="mb-6">
-          <label className="block text-sm font-medium text-teal-700 mb-1">
-            Description
-          </label>
+          <label className="block text-sm font-medium text-teal-700 mb-1">Description</label>
           <textarea
             value={game.description}
             onChange={(e) => {
@@ -310,7 +318,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               <Button
                 key={level}
                 type="button"
-                variant={game.requiredKnowledgeLevel === level ? "secondary" : "outline"}
+                variant={game.requiredKnowledgeLevel === level ? 'secondary' : 'outline'}
                 onClick={() => setGame({ ...game, requiredKnowledgeLevel: level })}
                 className="flex-1 sm:flex-none text-xs sm:text-sm px-2 sm:px-4"
               >
@@ -319,17 +327,18 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
             ))}
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-teal-700 mb-1">
-              Framework {errors.framework && <span className="text-red-500">(Select at least one)</span>}
+              Framework{' '}
+              {errors.framework && <span className="text-red-500">(Select at least one)</span>}
             </label>
             <div className="flex flex-wrap gap-2">
               {frameworks.map((framework) => (
                 <Badge
                   key={framework}
-                  variant={game.framework.includes(framework) ? "default" : "outline"}
+                  variant={game.framework.includes(framework) ? 'default' : 'outline'}
                   className={`cursor-pointer transition-colors ${
                     game.framework.includes(framework) ? '' : 'hover:bg-teal-100'
                   }`}
@@ -340,16 +349,17 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               ))}
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-teal-700 mb-1">
-              Purpose {errors.purpose && <span className="text-red-500">(Select at least one)</span>}
+              Purpose{' '}
+              {errors.purpose && <span className="text-red-500">(Select at least one)</span>}
             </label>
             <div className="flex flex-wrap gap-2">
               {purposes.map((purpose) => (
                 <Badge
                   key={purpose}
-                  variant={game.purpose.includes(purpose) ? "secondary" : "outline"}
+                  variant={game.purpose.includes(purpose) ? 'secondary' : 'outline'}
                   className={`cursor-pointer transition-colors ${
                     game.purpose.includes(purpose) ? '' : 'hover:bg-purple-100'
                   }`}
@@ -361,12 +371,10 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
             </div>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-teal-700 mb-1">
-              Min Participants
-            </label>
+            <label className="block text-sm font-medium text-teal-700 mb-1">Min Participants</label>
             <input
               type="number"
               min="1"
@@ -378,13 +386,13 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               }}
               className={`w-full p-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${errors.minParticipants ? 'border-red-500' : 'border-teal-300'}`}
             />
-            {errors.minParticipants && <p className="mt-1 text-sm text-red-500">{errors.minParticipants}</p>}
+            {errors.minParticipants && (
+              <p className="mt-1 text-sm text-red-500">{errors.minParticipants}</p>
+            )}
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-teal-700 mb-1">
-              Max Participants
-            </label>
+            <label className="block text-sm font-medium text-teal-700 mb-1">Max Participants</label>
             <input
               type="number"
               min="1"
@@ -394,7 +402,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               className="w-full p-2 border border-teal-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-teal-700 mb-1">
               Duration (minutes)
@@ -413,9 +421,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
 
         <div className="mb-6">
           <div className="flex items-center justify-between mb-1">
-            <label className="block text-sm font-medium text-teal-700">
-              Learning Outcomes
-            </label>
+            <label className="block text-sm font-medium text-teal-700">Learning Outcomes</label>
             <Button
               type="button"
               variant="ghost"
@@ -426,7 +432,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               <Plus className="h-4 w-4 mr-1" /> Add Outcome
             </Button>
           </div>
-          
+
           {game.learningOutcomes.map((outcome, index) => (
             <div key={index} className="flex items-center mb-2">
               <input
@@ -452,12 +458,10 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
             <p className="mt-1 text-sm text-red-500">{errors.learningOutcomes}</p>
           )}
         </div>
-        
+
         <div className="mb-6">
           <div className="flex items-center justify-between mb-1">
-            <label className="block text-sm font-medium text-teal-700">
-              Materials Needed
-            </label>
+            <label className="block text-sm font-medium text-teal-700">Materials Needed</label>
             <Button
               type="button"
               variant="ghost"
@@ -468,7 +472,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               <Plus className="h-4 w-4 mr-1" /> Add Material
             </Button>
           </div>
-          
+
           {game.materials.map((material, index) => (
             <div key={index} className="flex items-center mb-2">
               <input
@@ -491,11 +495,9 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
             </div>
           ))}
         </div>
-        
+
         <div className="mb-6">
-          <label className="block text-sm font-medium text-teal-700 mb-1">
-            Instructions
-          </label>
+          <label className="block text-sm font-medium text-teal-700 mb-1">Instructions</label>
           <textarea
             value={game.instructions}
             onChange={(e) => {
@@ -506,13 +508,13 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
             rows={5}
             placeholder="Step-by-step instructions for running the game"
           />
-          {errors.instructions && <p className="mt-1 text-sm text-red-500">{errors.instructions}</p>}
+          {errors.instructions && (
+            <p className="mt-1 text-sm text-red-500">{errors.instructions}</p>
+          )}
         </div>
-        
+
         <div className="mb-6">
-          <label className="block text-sm font-medium text-teal-700 mb-1">
-            Facilitation Tips
-          </label>
+          <label className="block text-sm font-medium text-teal-700 mb-1">Facilitation Tips</label>
           <textarea
             value={game.facilitationTips}
             onChange={(e) => setGame({ ...game, facilitationTips: e.target.value })}
@@ -531,7 +533,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               onChange={(e) => {
                 setGame({ ...game, isAccessible: e.target.checked });
                 if (!e.target.checked) {
-                  setGame(prev => ({ ...prev, accessibilityNotes: '' }));
+                  setGame((prev) => ({ ...prev, accessibilityNotes: '' }));
                 }
               }}
               className="h-4 w-4 text-teal-600 rounded border-teal-300 focus:ring-teal-500"
@@ -540,7 +542,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
               This game is disability-friendly
             </label>
           </div>
-          
+
           {game.isAccessible && (
             <div className="mt-2">
               <textarea
@@ -563,12 +565,20 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
             </div>
           )}
         </div>
-        
+
         <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
-          <Button type="button" variant="outline" onClick={onBack} className="w-full sm:w-auto text-sm sm:text-base">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className="w-full sm:w-auto text-sm sm:text-base"
+          >
             Cancel
           </Button>
-          <Button type="submit" className="w-full sm:w-auto text-sm sm:text-base bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600">
+          <Button
+            type="submit"
+            className="w-full sm:w-auto text-sm sm:text-base bg-gradient-to-r from-teal-500 to-purple-500 hover:from-teal-600 hover:to-purple-600"
+          >
             Save Game
           </Button>
         </div>
