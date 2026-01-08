@@ -63,16 +63,21 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
   const generateMissingFields = async () => {
     setIsGenerating(true);
     try {
-      // Create a properly typed partial game data object
-      const filledFields: PartialGameData = Object.entries(game).reduce((acc, [key, value]) => {
-        const typedKey = key as keyof Omit<Game, 'id' | 'isFavorite'>;
+      // Create a properly typed partial game data object by filtering out empty values
+      const filledFields: PartialGameData = {};
+
+      // Type-safe assignment of filled fields
+      (Object.keys(game) as Array<keyof typeof game>).forEach((key) => {
+        // Skip id and isFavorite as they're not part of PartialGameData
+        if (key === 'id' || key === 'isFavorite') return;
+
+        const value = game[key];
         if (Array.isArray(value) && value.length > 0 && value.every((v) => v !== '')) {
-          acc[typedKey] = value as never;
+          (filledFields as Record<string, unknown>)[key] = value;
         } else if (value !== '' && value !== false && value !== 0) {
-          acc[typedKey] = value as never;
+          (filledFields as Record<string, unknown>)[key] = value;
         }
-        return acc;
-      }, {} as PartialGameData);
+      });
 
       const systemPrompt = `You are an expert Agile coach. Based on the following partial game information, complete the missing fields to create a cohesive Agile game. Return ONLY a JSON object with all fields.
 

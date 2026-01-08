@@ -27,6 +27,43 @@ interface WindowWithEnv extends Window {
   env?: Record<string, string>;
 }
 
+/**
+ * Runtime validation helper for API responses
+ * Validates that the response has the expected structure
+ */
+function isValidGameData(data: unknown): data is GeneratedGameData {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+
+  const obj = data as Record<string, unknown>;
+
+  // Check for required string fields
+  const hasRequiredStrings =
+    typeof obj.title === 'string' &&
+    typeof obj.description === 'string' &&
+    typeof obj.instructions === 'string' &&
+    typeof obj.facilitationTips === 'string';
+
+  // Check for required array fields
+  const hasRequiredArrays =
+    Array.isArray(obj.framework) &&
+    Array.isArray(obj.purpose) &&
+    Array.isArray(obj.materials) &&
+    Array.isArray(obj.learningOutcomes);
+
+  // Check for required number fields
+  const hasRequiredNumbers =
+    typeof obj.minParticipants === 'number' &&
+    typeof obj.maxParticipants === 'number' &&
+    typeof obj.duration === 'number';
+
+  // Check for required boolean fields
+  const hasRequiredBooleans = typeof obj.isAccessible === 'boolean';
+
+  return hasRequiredStrings && hasRequiredArrays && hasRequiredNumbers && hasRequiredBooleans;
+}
+
 // Helper function to get environment variables in both Vite and test environments
 function getEnvVar(name: string): string | undefined {
   // In any Node.js environment (including Jest), use process.env
@@ -216,8 +253,21 @@ class LLMService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = (await response.json()) as { data: GeneratedGameData };
-      return result.data;
+      const result = await response.json();
+
+      // Validate response structure before returning
+      if (!result || typeof result !== 'object' || !('data' in result)) {
+        throw new Error('Invalid API response structure');
+      }
+
+      const gameData = result.data as unknown;
+
+      // Runtime validation to ensure type safety
+      if (!isValidGameData(gameData)) {
+        throw new Error('Invalid game data structure received from API');
+      }
+
+      return gameData;
     } catch (error) {
       // Don't record failed requests in rate limiter to avoid penalizing users for API errors
       if (error instanceof RateLimitError) {
@@ -264,8 +314,21 @@ class LLMService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = (await response.json()) as { data: GeneratedGameData };
-      return result.data;
+      const result = await response.json();
+
+      // Validate response structure before returning
+      if (!result || typeof result !== 'object' || !('data' in result)) {
+        throw new Error('Invalid API response structure');
+      }
+
+      const gameData = result.data as unknown;
+
+      // Runtime validation to ensure type safety
+      if (!isValidGameData(gameData)) {
+        throw new Error('Invalid game data structure received from API');
+      }
+
+      return gameData;
     } catch (error) {
       // Don't record failed requests in rate limiter to avoid penalizing users for API errors
       if (error instanceof RateLimitError) {

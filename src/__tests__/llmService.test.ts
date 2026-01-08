@@ -35,9 +35,27 @@ describe('LLMService', () => {
 
   describe('generateGameData', () => {
     it('should call serverless function endpoint', async () => {
+      const validGameData = {
+        title: 'Test Game',
+        description: 'Test description',
+        framework: ['Scrum'],
+        purpose: ['Team Building'],
+        minParticipants: 5,
+        maxParticipants: 10,
+        duration: 30,
+        materials: ['Cards'],
+        instructions: 'Test instructions',
+        facilitationTips: 'Test tips',
+        complexity: 'Medium',
+        learningOutcomes: ['Outcome 1'],
+        isAccessible: true,
+        accessibilityNotes: 'Accessible',
+        requiredKnowledgeLevel: 'Agile Basics',
+      };
+
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ data: { title: 'Test Game' } }),
+        json: jest.fn().mockResolvedValue({ data: validGameData }),
       };
       (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
 
@@ -60,7 +78,7 @@ describe('LLMService', () => {
         }
       );
 
-      expect(result).toEqual({ title: 'Test Game' });
+      expect(result).toEqual(validGameData);
     });
 
     it('should handle fetch errors gracefully', async () => {
@@ -77,9 +95,27 @@ describe('LLMService', () => {
 
   describe('generateCompleteGame', () => {
     it('should call serverless function endpoint', async () => {
+      const validCompleteGame = {
+        title: 'Complete Game',
+        description: 'Complete description',
+        framework: ['Kanban'],
+        purpose: ['Problem Solving'],
+        minParticipants: 3,
+        maxParticipants: 8,
+        duration: 45,
+        materials: ['Whiteboard', 'Markers'],
+        instructions: 'Complete instructions',
+        facilitationTips: 'Complete tips',
+        complexity: 'Hard',
+        learningOutcomes: ['Outcome 1', 'Outcome 2'],
+        isAccessible: false,
+        accessibilityNotes: '',
+        requiredKnowledgeLevel: 'Agile Practitioner',
+      };
+
       const mockResponse = {
         ok: true,
-        json: jest.fn().mockResolvedValue({ data: { title: 'Complete Game' } }),
+        json: jest.fn().mockResolvedValue({ data: validCompleteGame }),
       };
       (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
 
@@ -102,7 +138,7 @@ describe('LLMService', () => {
         }
       );
 
-      expect(result).toEqual({ title: 'Complete Game' });
+      expect(result).toEqual(validCompleteGame);
     });
   });
 });
