@@ -9,6 +9,24 @@
  * Client → Serverless Function → LLM Service (API keys secure)
  */
 
+import type { Game } from '../types';
+
+// Type for partial game data used in generation
+export type PartialGameData = Partial<Omit<Game, 'id' | 'isFavorite'>>;
+
+// Type for complete game data returned from API (without id and isFavorite)
+export type GeneratedGameData = Omit<Game, 'id' | 'isFavorite'>;
+
+// Type for environment variables with extended window types
+interface ImportMetaEnv {
+  env: Record<string, string>;
+}
+
+interface WindowWithEnv extends Window {
+  importMeta?: ImportMetaEnv;
+  env?: Record<string, string>;
+}
+
 // Helper function to get environment variables in both Vite and test environments
 function getEnvVar(name: string): string | undefined {
   // In any Node.js environment (including Jest), use process.env
@@ -18,16 +36,16 @@ function getEnvVar(name: string): string | undefined {
 
   // In browser environments, try various approaches
   if (typeof window !== 'undefined') {
+    const extendedWindow = window as WindowWithEnv;
+
     // Check if import.meta is available on the window object (some build systems expose it)
-    const globalObj = window as unknown as { importMeta?: { env: Record<string, string> } };
-    if (globalObj.importMeta?.env) {
-      return globalObj.importMeta.env[name];
+    if (extendedWindow.importMeta?.env) {
+      return extendedWindow.importMeta.env[name];
     }
 
     // Check if environment variables are exposed on window (some build systems do this)
-    const windowObj = window as unknown as { env?: Record<string, string> };
-    if (windowObj.env) {
-      return windowObj.env[name];
+    if (extendedWindow.env) {
+      return extendedWindow.env[name];
     }
   }
 
@@ -166,9 +184,9 @@ class LLMService {
    * Generate game data based on partial input with rate limiting
    */
   public async generateGameData(
-    partialGameData: Record<string, unknown>,
+    partialGameData: PartialGameData,
     systemPrompt: string
-  ): Promise<Record<string, unknown>> {
+  ): Promise<GeneratedGameData> {
     if (!this.isAvailable()) {
       throw new Error('LLM service is not available.');
     }
@@ -198,7 +216,7 @@ class LLMService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
+      const result = (await response.json()) as { data: GeneratedGameData };
       return result.data;
     } catch (error) {
       // Don't record failed requests in rate limiter to avoid penalizing users for API errors
@@ -216,7 +234,7 @@ class LLMService {
   public async generateCompleteGame(
     userPrompt: string,
     systemPrompt: string
-  ): Promise<Record<string, unknown>> {
+  ): Promise<GeneratedGameData> {
     if (!this.isAvailable()) {
       throw new Error('LLM service is not available.');
     }
@@ -246,7 +264,7 @@ class LLMService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
+      const result = (await response.json()) as { data: GeneratedGameData };
       return result.data;
     } catch (error) {
       // Don't record failed requests in rate limiter to avoid penalizing users for API errors
