@@ -46,13 +46,14 @@ const AIGameSuggestion: React.FC<AIGameSuggestionProps> = ({ onGameGenerated }) 
           "requiredKnowledgeLevel": "Choose from: New to Agile, Agile Basics, Agile Practitioner, Agile Master"
         }`;
 
-      const userPrompt = prompt || "Suggest an engaging Agile game that promotes team collaboration";
+      const userPrompt =
+        prompt || 'Suggest an engaging Agile game that promotes team collaboration';
 
       const gameData = await llmService.generateCompleteGame(userPrompt, systemPrompt);
       const game: Game = {
         ...gameData,
         id: crypto.randomUUID(),
-        isFavorite: false
+        isFavorite: false,
       };
 
       setSuggestedGame(game);
@@ -92,7 +93,7 @@ const AIGameSuggestion: React.FC<AIGameSuggestionProps> = ({ onGameGenerated }) 
           .insert({
             game_data: suggestedGame,
             prompt: prompt || null,
-            popularity: 1
+            popularity: 1,
           })
           .select('id')
           .single();
@@ -137,7 +138,7 @@ const AIGameSuggestion: React.FC<AIGameSuggestionProps> = ({ onGameGenerated }) 
   return (
     <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
       <h2 className="text-lg sm:text-xl font-semibold mb-4">AI Game Suggestion</h2>
-      
+
       <div className="mb-4">
         <textarea
           value={prompt}
@@ -155,11 +156,7 @@ const AIGameSuggestion: React.FC<AIGameSuggestionProps> = ({ onGameGenerated }) 
       )}
 
       {!suggestedGame && (
-        <Button
-          onClick={generateGame}
-          disabled={loading}
-          className="w-full text-sm sm:text-base"
-        >
+        <Button onClick={generateGame} disabled={loading} className="w-full text-sm sm:text-base">
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

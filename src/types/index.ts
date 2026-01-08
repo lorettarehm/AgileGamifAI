@@ -1,24 +1,17 @@
-export type AgileFramework = 
-  | 'Scrum' 
-  | 'Kanban' 
-  | 'XP' 
-  | 'Lean' 
-  | 'LeSS' 
-  | 'Nexus' 
-  | 'General';
+export type AgileFramework = 'Scrum' | 'Kanban' | 'XP' | 'Lean' | 'LeSS' | 'Nexus' | 'General';
 
-export type GamePurpose = 
-  | 'Team Building' 
-  | 'Problem Solving' 
-  | 'Retrospective' 
-  | 'Estimation' 
-  | 'Planning' 
+export type GamePurpose =
+  | 'Team Building'
+  | 'Problem Solving'
+  | 'Retrospective'
+  | 'Estimation'
+  | 'Planning'
   | 'Prioritization'
   | 'Process Improvement';
 
 export type GameComplexity = 'Easy' | 'Medium' | 'Hard';
 
-export type AgileKnowledgeLevel = 
+export type AgileKnowledgeLevel =
   | 'New to Agile'
   | 'Agile Basics'
   | 'Agile Practitioner'

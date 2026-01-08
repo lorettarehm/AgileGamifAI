@@ -1,10 +1,10 @@
 /**
  * LLM Service - Secure API layer for Language Model interactions
- * 
+ *
  * SECURITY IMPROVEMENT: This service now calls secure serverless functions
  * instead of exposing API keys in the client bundle. API keys are kept
  * server-side only, preventing exposure to end users.
- * 
+ *
  * Architecture:
  * Client → Serverless Function → LLM Service (API keys secure)
  */
@@ -15,7 +15,7 @@ function getEnvVar(name: string): string | undefined {
   if (typeof process !== 'undefined' && process.env) {
     return process.env[name];
   }
-  
+
   // In browser environments, try various approaches
   if (typeof window !== 'undefined') {
     // Check if import.meta is available on the window object (some build systems expose it)
@@ -23,14 +23,14 @@ function getEnvVar(name: string): string | undefined {
     if (globalObj.importMeta?.env) {
       return globalObj.importMeta.env[name];
     }
-    
+
     // Check if environment variables are exposed on window (some build systems do this)
     const windowObj = window as unknown as { env?: Record<string, string> };
     if (windowObj.env) {
       return windowObj.env[name];
     }
   }
-  
+
   return undefined;
 }
 
@@ -55,7 +55,7 @@ class RateLimiter {
   canMakeRequest(): boolean {
     const now = Date.now();
     // Remove requests older than time window
-    this.requests = this.requests.filter(time => now - time < this.timeWindow);
+    this.requests = this.requests.filter((time) => now - time < this.timeWindow);
     return this.requests.length < this.maxRequests;
   }
 
@@ -65,7 +65,7 @@ class RateLimiter {
 
   getRemainingRequests(): number {
     const now = Date.now();
-    this.requests = this.requests.filter(time => now - time < this.timeWindow);
+    this.requests = this.requests.filter((time) => now - time < this.timeWindow);
     return Math.max(0, this.maxRequests - this.requests.length);
   }
 
@@ -79,7 +79,10 @@ class RateLimiter {
 
 // Custom error for rate limiting
 export class RateLimitError extends Error {
-  constructor(message: string, public remainingTime?: number) {
+  constructor(
+    message: string,
+    public remainingTime?: number
+  ) {
     super(message);
     this.name = 'RateLimitError';
   }
@@ -92,18 +95,19 @@ class LLMService {
 
   constructor() {
     // Configure rate limits based on environment
-    const isDevelopment = (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') || 
-                         getEnvVar('DEV') === 'true';
+    const isDevelopment =
+      (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') ||
+      getEnvVar('DEV') === 'true';
     const maxRequests = isDevelopment ? 50 : 20; // More lenient for development
     const timeWindow = 1; // 1 minute window
-    
+
     this.rateLimiter = new RateLimiter(maxRequests, timeWindow);
-    
+
     // Configure endpoints - will work for both local development and production
     this.config = {
       baseUrl: this.getBaseUrl(),
       generateGameDataEndpoint: '/.netlify/functions/generateGameData',
-      generateCompleteGameEndpoint: '/.netlify/functions/generateCompleteGame'
+      generateCompleteGameEndpoint: '/.netlify/functions/generateCompleteGame',
     };
   }
 
@@ -146,7 +150,7 @@ class LLMService {
   public getRateLimitStatus(): { remaining: number; resetTime: number } {
     return {
       remaining: this.rateLimiter.getRemainingRequests(),
-      resetTime: this.rateLimiter.getResetTime()
+      resetTime: this.rateLimiter.getResetTime(),
     };
   }
 
@@ -173,17 +177,20 @@ class LLMService {
     this.checkRateLimit();
 
     try {
-      const response = await fetch(`${this.config.baseUrl}${this.config.generateGameDataEndpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          partialGameData,
-          systemPrompt
-        })
-      });
-      
+      const response = await fetch(
+        `${this.config.baseUrl}${this.config.generateGameDataEndpoint}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            partialGameData,
+            systemPrompt,
+          }),
+        }
+      );
+
       // Record successful request for rate limiting
       this.rateLimiter.recordRequest();
 
@@ -218,16 +225,19 @@ class LLMService {
     this.checkRateLimit();
 
     try {
-      const response = await fetch(`${this.config.baseUrl}${this.config.generateCompleteGameEndpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userPrompt,
-          systemPrompt
-        })
-      });
+      const response = await fetch(
+        `${this.config.baseUrl}${this.config.generateCompleteGameEndpoint}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userPrompt,
+            systemPrompt,
+          }),
+        }
+      );
 
       // Record successful request for rate limiting
       this.rateLimiter.recordRequest();
@@ -251,19 +261,19 @@ class LLMService {
   /**
    * Get service status and configuration (for debugging)
    */
-  public getStatus(): { 
-    available: boolean; 
-    hasApiKey: boolean; 
+  public getStatus(): {
+    available: boolean;
+    hasApiKey: boolean;
     baseUrl: string;
     rateLimit: { remaining: number; resetTime: number };
   } {
     this.initialize();
-    
+
     return {
       available: this.isAvailable(),
       hasApiKey: !!getEnvVar('VITE_HF_ACCESS_TOKEN'),
       baseUrl: this.config.baseUrl,
-      rateLimit: this.getRateLimitStatus()
+      rateLimit: this.getRateLimitStatus(),
     };
   }
 }

@@ -27,9 +27,11 @@ function App() {
     complexity: [],
     searchTerm: '',
     knowledgeLevel: [],
-    accessibleOnly: false
+    accessibleOnly: false,
   });
-  const [currentView, setCurrentView] = useState<'library' | 'create' | 'favorites' | 'detail' | 'facilitator'>('library');
+  const [currentView, setCurrentView] = useState<
+    'library' | 'create' | 'favorites' | 'detail' | 'facilitator'
+  >('library');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,10 +67,10 @@ function App() {
 
         if (error) throw error;
 
-        const formattedGames = data.map(item => ({
+        const formattedGames = data.map((item) => ({
           ...item.game_data,
           id: item.id,
-          isFavorite: false
+          isFavorite: false,
         }));
 
         setGames(formattedGames);
@@ -84,49 +86,59 @@ function App() {
   }, []);
 
   // Get selected game if any
-  const selectedGame = selectedGameId 
-    ? games.find(game => game.id === selectedGameId) 
-    : null;
+  const selectedGame = selectedGameId ? games.find((game) => game.id === selectedGameId) : null;
 
   // Filter games based on current filters
-  const filteredGames = games.filter(game => {
-    if (filters.searchTerm && !game.title.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
+  const filteredGames = games.filter((game) => {
+    if (
+      filters.searchTerm &&
+      !game.title.toLowerCase().includes(filters.searchTerm.toLowerCase())
+    ) {
       return false;
     }
-    
-    if (filters.framework.length > 0 && !game.framework.some(m => filters.framework.includes(m))) {
+
+    if (
+      filters.framework.length > 0 &&
+      !game.framework.some((m) => filters.framework.includes(m))
+    ) {
       return false;
     }
-    
-    if (filters.purpose.length > 0 && !game.purpose.some(p => filters.purpose.includes(p))) {
+
+    if (filters.purpose.length > 0 && !game.purpose.some((p) => filters.purpose.includes(p))) {
       return false;
     }
-    
-    if (filters.participants > 0 && (game.minParticipants > filters.participants || game.maxParticipants < filters.participants)) {
+
+    if (
+      filters.participants > 0 &&
+      (game.minParticipants > filters.participants || game.maxParticipants < filters.participants)
+    ) {
       return false;
     }
-    
+
     if (game.duration > filters.maxDuration) {
       return false;
     }
-    
+
     if (filters.complexity.length > 0 && !filters.complexity.includes(game.complexity)) {
       return false;
     }
 
-    if (filters.knowledgeLevel.length > 0 && !filters.knowledgeLevel.includes(game.requiredKnowledgeLevel)) {
+    if (
+      filters.knowledgeLevel.length > 0 &&
+      !filters.knowledgeLevel.includes(game.requiredKnowledgeLevel)
+    ) {
       return false;
     }
 
     if (filters.accessibleOnly && !game.isAccessible) {
       return false;
     }
-    
+
     return true;
   });
 
   // Get only favorite games
-  const favoriteGames = games.filter(game => game.isFavorite);
+  const favoriteGames = games.filter((game) => game.isFavorite);
 
   // Pagination
   const totalPages = Math.ceil(filteredGames.length / itemsPerPage);
@@ -135,9 +147,9 @@ function App() {
 
   // Handler functions
   const handleToggleFavorite = (id: string) => {
-    setGames(games.map(game => 
-      game.id === id ? { ...game, isFavorite: !game.isFavorite } : game
-    ));
+    setGames(
+      games.map((game) => (game.id === id ? { ...game, isFavorite: !game.isFavorite } : game))
+    );
   };
 
   const handleViewDetails = (id: string) => {
@@ -189,7 +201,7 @@ function App() {
     <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-6">
       <Button
         variant="outline"
-        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+        onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
         disabled={currentPage === 1}
         className="w-full sm:w-auto border-teal-300 text-teal-700 hover:bg-teal-50 text-sm"
       >
@@ -201,7 +213,7 @@ function App() {
       </span>
       <Button
         variant="outline"
-        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+        onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
         disabled={currentPage === totalPages}
         className="w-full sm:w-auto border-teal-300 text-teal-700 hover:bg-teal-50 text-sm"
       >
@@ -214,7 +226,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-purple-50">
       <Header currentView={currentView} onViewChange={handleViewChange} />
-      
+
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         {currentView === 'library' && (
           <>
@@ -225,9 +237,9 @@ function App() {
               <div className="text-center py-8 text-red-600">{error}</div>
             ) : (
               <>
-                <GameGrid 
-                  games={paginatedGames} 
-                  onToggleFavorite={handleToggleFavorite} 
+                <GameGrid
+                  games={paginatedGames}
+                  onToggleFavorite={handleToggleFavorite}
                   onViewDetails={handleViewDetails}
                 />
                 {filteredGames.length > itemsPerPage && <Pagination />}
@@ -235,33 +247,33 @@ function App() {
             )}
           </>
         )}
-        
+
         {currentView === 'favorites' && (
           <>
             <GameFilter filters={filters} onFilterChange={setFilters} />
-            <GameGrid 
-              games={favoriteGames} 
-              onToggleFavorite={handleToggleFavorite} 
+            <GameGrid
+              games={favoriteGames}
+              onToggleFavorite={handleToggleFavorite}
               onViewDetails={handleViewDetails}
             />
           </>
         )}
-        
+
         {currentView === 'create' && (
           <GameCreate onBack={handleBackToLibrary} onSaveGame={handleSaveGame} />
         )}
-        
+
         {currentView === 'detail' && selectedGame && (
-          <GameDetail 
-            game={selectedGame} 
+          <GameDetail
+            game={selectedGame}
             onBack={handleBackToLibrary}
             onStartGame={handleStartGame}
           />
         )}
-        
+
         {currentView === 'facilitator' && selectedGame && (
-          <GameFacilitator 
-            game={selectedGame} 
+          <GameFacilitator
+            game={selectedGame}
             onBack={() => setCurrentView('detail')}
             onComplete={handleCompleteGame}
           />

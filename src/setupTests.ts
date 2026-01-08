@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 // Mock environment variables
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -35,8 +35,8 @@ Object.defineProperty(global, 'importMeta', {
       VITE_SUPABASE_URL: 'https://test.supabase.co',
       VITE_SUPABASE_ANON_KEY: 'test-key',
       // Note: VITE_HF_ACCESS_TOKEN removed - API keys now handled server-side
-    }
-  }
+    },
+  },
 });
 
 // Mock Supabase environment variables
