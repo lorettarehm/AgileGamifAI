@@ -9,6 +9,61 @@
  * Client → Serverless Function → LLM Service (API keys secure)
  */
 
+import type { Game } from '../types';
+
+// Type for partial game data used in generation
+export type PartialGameData = Partial<Omit<Game, 'id' | 'isFavorite'>>;
+
+// Type for complete game data returned from API (without id and isFavorite)
+export type GeneratedGameData = Omit<Game, 'id' | 'isFavorite'>;
+
+// Type for environment variables with extended window types
+interface ImportMetaEnv {
+  env: Record<string, string>;
+}
+
+interface WindowWithEnv extends Window {
+  importMeta?: ImportMetaEnv;
+  env?: Record<string, string>;
+}
+
+/**
+ * Runtime validation helper for API responses
+ * Validates that the response has the expected structure
+ */
+function isValidGameData(data: unknown): data is GeneratedGameData {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+
+  const obj = data as Record<string, unknown>;
+
+  // Check for required string fields
+  const hasRequiredStrings =
+    typeof obj.title === 'string' &&
+    typeof obj.description === 'string' &&
+    typeof obj.instructions === 'string' &&
+    typeof obj.facilitationTips === 'string';
+
+  // Check for required array fields
+  const hasRequiredArrays =
+    Array.isArray(obj.framework) &&
+    Array.isArray(obj.purpose) &&
+    Array.isArray(obj.materials) &&
+    Array.isArray(obj.learningOutcomes);
+
+  // Check for required number fields
+  const hasRequiredNumbers =
+    typeof obj.minParticipants === 'number' &&
+    typeof obj.maxParticipants === 'number' &&
+    typeof obj.duration === 'number';
+
+  // Check for required boolean fields
+  const hasRequiredBooleans = typeof obj.isAccessible === 'boolean';
+
+  return hasRequiredStrings && hasRequiredArrays && hasRequiredNumbers && hasRequiredBooleans;
+}
+
 // Helper function to get environment variables in both Vite and test environments
 function getEnvVar(name: string): string | undefined {
   // In any Node.js environment (including Jest), use process.env
@@ -18,16 +73,16 @@ function getEnvVar(name: string): string | undefined {
 
   // In browser environments, try various approaches
   if (typeof window !== 'undefined') {
+    const extendedWindow = window as WindowWithEnv;
+
     // Check if import.meta is available on the window object (some build systems expose it)
-    const globalObj = window as unknown as { importMeta?: { env: Record<string, string> } };
-    if (globalObj.importMeta?.env) {
-      return globalObj.importMeta.env[name];
+    if (extendedWindow.importMeta?.env) {
+      return extendedWindow.importMeta.env[name];
     }
 
     // Check if environment variables are exposed on window (some build systems do this)
-    const windowObj = window as unknown as { env?: Record<string, string> };
-    if (windowObj.env) {
-      return windowObj.env[name];
+    if (extendedWindow.env) {
+      return extendedWindow.env[name];
     }
   }
 
@@ -166,9 +221,9 @@ class LLMService {
    * Generate game data based on partial input with rate limiting
    */
   public async generateGameData(
-    partialGameData: Record<string, unknown>,
+    partialGameData: PartialGameData,
     systemPrompt: string
-  ): Promise<Record<string, unknown>> {
+  ): Promise<GeneratedGameData> {
     if (!this.isAvailable()) {
       throw new Error('LLM service is not available.');
     }
@@ -199,7 +254,20 @@ class LLMService {
       }
 
       const result = await response.json();
-      return result.data;
+
+      // Validate response structure before returning
+      if (!result || typeof result !== 'object' || !('data' in result)) {
+        throw new Error('Invalid API response structure');
+      }
+
+      const gameData = result.data as unknown;
+
+      // Runtime validation to ensure type safety
+      if (!isValidGameData(gameData)) {
+        throw new Error('Invalid game data structure received from API');
+      }
+
+      return gameData;
     } catch (error) {
       // Don't record failed requests in rate limiter to avoid penalizing users for API errors
       if (error instanceof RateLimitError) {
@@ -216,7 +284,7 @@ class LLMService {
   public async generateCompleteGame(
     userPrompt: string,
     systemPrompt: string
-  ): Promise<Record<string, unknown>> {
+  ): Promise<GeneratedGameData> {
     if (!this.isAvailable()) {
       throw new Error('LLM service is not available.');
     }
@@ -247,7 +315,20 @@ class LLMService {
       }
 
       const result = await response.json();
-      return result.data;
+
+      // Validate response structure before returning
+      if (!result || typeof result !== 'object' || !('data' in result)) {
+        throw new Error('Invalid API response structure');
+      }
+
+      const gameData = result.data as unknown;
+
+      // Runtime validation to ensure type safety
+      if (!isValidGameData(gameData)) {
+        throw new Error('Invalid game data structure received from API');
+      }
+
+      return gameData;
     } catch (error) {
       // Don't record failed requests in rate limiter to avoid penalizing users for API errors
       if (error instanceof RateLimitError) {

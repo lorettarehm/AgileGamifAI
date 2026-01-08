@@ -3,7 +3,7 @@ import { ArrowLeft, Plus, Minus, Loader2 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Game, AgileFramework, GamePurpose, GameComplexity, AgileKnowledgeLevel } from '../types';
 import { Badge } from './ui/Badge';
-import { llmService } from '../services/llmService';
+import { llmService, type PartialGameData } from '../services/llmService';
 
 interface GameCreateProps {
   onBack: () => void;
@@ -63,17 +63,21 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
   const generateMissingFields = async () => {
     setIsGenerating(true);
     try {
-      const filledFields = Object.entries(game).reduce(
-        (acc, [key, value]) => {
-          if (Array.isArray(value) && value.length > 0 && value.every((v) => v !== '')) {
-            acc[key] = value;
-          } else if (value !== '' && value !== false && value !== 0) {
-            acc[key] = value;
-          }
-          return acc;
-        },
-        {} as Record<string, unknown>
-      );
+      // Create a properly typed partial game data object by filtering out empty values
+      const filledFields: PartialGameData = {};
+
+      // Type-safe assignment of filled fields
+      (Object.keys(game) as Array<keyof typeof game>).forEach((key) => {
+        // Skip id and isFavorite as they're not part of PartialGameData
+        if (key === 'id' || key === 'isFavorite') return;
+
+        const value = game[key];
+        if (Array.isArray(value) && value.length > 0 && value.every((v) => v !== '')) {
+          (filledFields as Record<string, unknown>)[key] = value;
+        } else if (value !== '' && value !== false && value !== 0) {
+          (filledFields as Record<string, unknown>)[key] = value;
+        }
+      });
 
       const systemPrompt = `You are an expert Agile coach. Based on the following partial game information, complete the missing fields to create a cohesive Agile game. Return ONLY a JSON object with all fields.
 
@@ -98,7 +102,7 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
 
       const generatedGame = await llmService.generateGameData(filledFields, systemPrompt);
 
-      const mergedGame = {
+      const mergedGame: Omit<Game, 'id'> = {
         ...DEFAULT_GAME,
         ...generatedGame,
         ...filledFields,
