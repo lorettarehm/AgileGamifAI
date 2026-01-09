@@ -19,7 +19,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.77.0",
+    "@supabase/supabase-js": "^2.90.1",
     "class-variance-authority": "^0.7.0",
     "lucide-react": "^0.546.0",
     "react": "^19.1.0",
