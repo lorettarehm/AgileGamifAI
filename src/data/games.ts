@@ -26,6 +26,14 @@ export const sampleGames: Game[] = [
     `,
     complexity: 'Easy',
     isFavorite: false,
+    learningOutcomes: [
+      'Understand relative estimation techniques',
+      'Improve team consensus building',
+      'Reduce estimation bias through collaborative discussion',
+    ],
+    isAccessible: true,
+    accessibilityNotes: 'Can be played with digital tools for remote teams',
+    requiredKnowledgeLevel: 'Agile Basics',
   },
   {
     id: '2',
@@ -53,6 +61,14 @@ export const sampleGames: Game[] = [
     `,
     complexity: 'Medium',
     isFavorite: false,
+    learningOutcomes: [
+      'Identify factors helping and hindering team progress',
+      'Develop actionable improvement plans',
+      'Improve retrospective engagement and participation',
+    ],
+    isAccessible: true,
+    accessibilityNotes: 'Can be facilitated digitally using virtual whiteboard tools',
+    requiredKnowledgeLevel: 'Agile Basics',
   },
   {
     id: '3',
@@ -80,6 +96,13 @@ export const sampleGames: Game[] = [
     `,
     complexity: 'Medium',
     isFavorite: false,
+    learningOutcomes: [
+      'Experience self-organization principles',
+      'Understand continuous improvement through iterations',
+      'Learn the impact of process constraints on throughput',
+    ],
+    isAccessible: false,
+    requiredKnowledgeLevel: 'Agile Basics',
   },
   {
     id: '4',
@@ -112,6 +135,14 @@ export const sampleGames: Game[] = [
     `,
     complexity: 'Hard',
     isFavorite: false,
+    learningOutcomes: [
+      'Understand Kanban flow and WIP limits',
+      'Experience bottleneck identification and resolution',
+      'Learn pull-based workflow management',
+    ],
+    isAccessible: true,
+    accessibilityNotes: 'Can be adapted with digital Kanban boards for remote teams',
+    requiredKnowledgeLevel: 'Agile Practitioner',
   },
   {
     id: '5',
@@ -138,5 +169,13 @@ export const sampleGames: Game[] = [
     `,
     complexity: 'Easy',
     isFavorite: false,
+    learningOutcomes: [
+      'Practice collaborative prioritization techniques',
+      'Build team consensus on priorities',
+      'Understand the power of visual decision-making',
+    ],
+    isAccessible: true,
+    accessibilityNotes: 'Digital voting tools available for remote teams',
+    requiredKnowledgeLevel: 'New to Agile',
   },
 ];

@@ -19,7 +19,16 @@ interface GameDetailProps {
   onStartGame: (id: string) => void;
 }
 
-const frameworkColorMap: Record<string, string> = {
+type BadgeVariant =
+  | 'default'
+  | 'secondary'
+  | 'purple'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'outline';
+
+const frameworkColorMap: Record<string, BadgeVariant> = {
   Scrum: 'default', // teal
   Kanban: 'secondary', // purple
   XP: 'purple',
@@ -29,7 +38,7 @@ const frameworkColorMap: Record<string, string> = {
   General: 'outline',
 };
 
-const knowledgeLevelColor: Record<string, string> = {
+const knowledgeLevelColor: Record<string, BadgeVariant> = {
   'New to Agile': 'success',
   'Agile Basics': 'default',
   'Agile Practitioner': 'warning',
@@ -37,11 +46,14 @@ const knowledgeLevelColor: Record<string, string> = {
 };
 
 const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) => {
-  const complexityColor = {
-    Easy: 'success',
-    Medium: 'warning',
-    Hard: 'danger',
-  }[game.complexity];
+  const complexityColor: BadgeVariant =
+    (
+      {
+        Easy: 'success',
+        Medium: 'warning',
+        Hard: 'danger',
+      } as Record<string, BadgeVariant>
+    )[game.complexity] ?? 'default';
 
   return (
     <div className="bg-white rounded-lg shadow-xl overflow-hidden border border-teal-100">
@@ -66,7 +78,7 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
           {game.framework.map((method) => (
             <Badge
               key={method}
-              variant={frameworkColorMap[method] || 'default'}
+              variant={frameworkColorMap[method] ?? 'default'}
               className="bg-white/20 text-white border-white/30 text-xs sm:text-sm"
             >
               {method}
@@ -111,19 +123,7 @@ const GameDetail: React.FC<GameDetailProps> = ({ game, onBack, onStartGame }) =>
             <div>
               <p className="text-xs sm:text-sm text-teal-600">Complexity</p>
               <p className="font-medium flex items-center">
-                <Badge
-                  variant={
-                    complexityColor as
-                      | 'default'
-                      | 'secondary'
-                      | 'purple'
-                      | 'success'
-                      | 'warning'
-                      | 'danger'
-                      | 'outline'
-                  }
-                  className="text-xs"
-                >
+                <Badge variant={complexityColor} className="text-xs">
                   {game.complexity}
                 </Badge>
               </p>
