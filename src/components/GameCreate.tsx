@@ -68,8 +68,8 @@ const GameCreate = ({ onBack, onSaveGame }: GameCreateProps) => {
 
       // Type-safe assignment of filled fields
       (Object.keys(game) as Array<keyof typeof game>).forEach((key) => {
-        // Skip id and isFavorite as they're not part of PartialGameData
-        if (key === 'id' || key === 'isFavorite') return;
+        // Skip isFavorite as it's not part of PartialGameData
+        if (key === 'isFavorite') return;
 
         const value = game[key];
         if (Array.isArray(value) && value.length > 0 && value.every((v) => v !== '')) {
